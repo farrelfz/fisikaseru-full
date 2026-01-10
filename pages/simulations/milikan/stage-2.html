@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Simulasi interaktif Eksperimen Tetes Minyak Millikan - Tahap 2 Praktikum Utama dengan visualisasi 3D dan mikroskop">
+    <title>Tahap 2: Praktikum Utama - Eksperimen Millikan | FisikaSeru</title>
+    <link rel="stylesheet" href="../../../css/main.css">
+
+    <link rel="stylesheet" href="./css/simulation.css">
+</head>
+<body class="bg-background">
+    <!-- Navigation Header -->
+    <nav data-embed-hide="true" class="bg-white border-b border-border sticky top-0 z-50 shadow-sm">
+        <div class="container-custom">
+            <div class="flex items-center justify-between h-16">
+                <a href="../../landing_page.html" class="flex items-center space-x-3">
+                    <svg class="w-10 h-10" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="20" cy="20" r="18" fill="#3B82F6" opacity="0.1"/>
+                        <path d="M20 8C13.373 8 8 13.373 8 20C8 26.627 13.373 32 20 32C26.627 32 32 26.627 32 20C32 13.373 26.627 8 20 8ZM20 10C25.514 10 30 14.486 30 20C30 25.514 25.514 30 20 30C14.486 30 10 25.514 10 20C10 14.486 14.486 10 20 10Z" fill="#3B82F6"/>
+                        <circle cx="20" cy="20" r="4" fill="#06B6D4"/>
+                    </svg>
+                    <div>
+                        <h3 class="text-base font-heading font-semibold">FisikaSeru</h3>
+                        <p class="text-xs text-text-tertiary font-caption">Laboratorium Virtual</p>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="py-8">
+        <div class="container-custom">
+            <div class="grid lg:grid-cols-12 gap-6">
+                <!-- Left: Wide simulation area -->
+                <div class="lg:col-span-8 space-y-6">
+                    <!-- Tabs + Status -->
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center space-x-2">
+                            <button id="tab3D" class="tab-button btn btn-outline px-4 py-2 active">Kamar 3D</button>
+                            <button id="tabMicroscope" class="tab-button btn btn-outline px-4 py-2">Mikroskop</button>
+                        </div>
+                        <div class="flex items-center text-xs text-white">
+                            <span id="statusIndicator" class="status-indicator status-stopped"></span>
+                            <span id="statusText" class="font-caption">Siap Memulai</span>
+                        </div>
+                    </div>
+
+                    <!-- Simulation Container (canvas + in-box controls, no overlap) -->
+                    <div class="simulation-container">
+                        <!-- Canvas stage -->
+                        <div class="simulation-stage">
+                            <!-- 3D Chamber View -->
+                            <div id="view3D" class="w-full h-full">
+                                <canvas id="chamber3D"></canvas>
+                                <div class="measurement-overlay">
+                                    <div class="flex items-center space-x-2">
+                                        <div class="particle-indicator"></div>
+                                        <span class="text-xs">Partikel:</span>
+                                        <span id="particleCount" class="text-primary font-semibold">0</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Microscope View (hidden by default) -->
+                            <div id="viewMicroscope" class="w-full h-full hidden">
+                                <canvas id="microscopeCanvas"></canvas>
+                                <div class="measurement-overlay">
+                                    <div class="flex items-center space-x-2 mb-2">
+                                        <svg class="w-4 h-4 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"/>
+                                        </svg>
+                                        <span class="text-xs font-semibold">Pembesaran: 400x</span>
+                                    </div>
+                                    <div class="space-y-1 text-xs">
+                                        <div class="flex justify-between">
+                                            <span class="text-white/70">Posisi Y:</span>
+                                            <span class="text-accent font-semibold" id="positionY">0.000 mm</span>
+                                        </div>
+                                        <div class="flex justify-between">
+                                            <span class="text-white/70">Kecepatan:</span>
+                                            <span class="text-accent font-semibold" id="velocityDisplay">0.000 mm/s</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Controls inside the same box (flow layout, no overlap with canvas) -->
+                        <div id="controlOverlay" class="simulation-controls p-4 space-y-4">
+                            <!-- Control Panel -->
+                            <div class="bg-white rounded-lg border border-border p-6 shadow-md">
+                                <h3 class="text-lg font-heading font-semibold text-text-primary mb-4 flex items-center">
+                                    <svg class="w-5 h-5 mr-2 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"/>
+                                    </svg>
+                                    Kontrol Eksperimen
+                                </h3>
+                                <div class="space-y-6">
+                                    <div>
+                                        <div class="flex items-center justify-between mb-2">
+                                            <label class="label flex items-center space-x-2">
+                                                <span>Tegangan Listrik (V)</span>
+                                                <div class="tooltip-trigger"></div>
+                                            </label>
+                                            <span class="text-sm font-semibold text-primary font-mono" id="voltageValue">500 V</span>
+                                        </div>
+                                        <input type="range" id="voltageSlider" class="control-slider" min="0" max="1000" value="500" step="10">
+                                        <div class="flex justify-between text-xs text-text-tertiary mt-1 font-caption">
+                                            <span>0 V</span>
+                                            <span>1000 V</span>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div class="flex items-center justify-between mb-2">
+                                            <label class="label flex items-center space-x-2">
+                                                <span>Jarak Pelat (mm)</span>
+                                                <div class="tooltip-trigger"></div>
+                                            </label>
+                                            <span class="text-sm font-semibold text-primary font-mono" id="distanceValue">10.0 mm</span>
+                                        </div>
+                                        <input type="range" id="distanceSlider" class="control-slider" min="5" max="20" value="10" step="0.5">
+                                        <div class="flex justify-between text-xs text-text-tertiary mt-1 font-caption">
+                                            <span>5 mm</span>
+                                            <span>20 mm</span>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center space-x-3 pt-4 border-t border-border">
+                                        <button id="btnStart" class="btn btn-primary rounded-lg px-6 py-2.5 flex-1 flex items-center justify-center space-x-2">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/>
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                            </svg>
+                                            <span>Mulai</span>
+                                        </button>
+                                        <button id="btnPause" class="btn btn-outline rounded-lg px-6 py-2.5 flex-1 flex items-center justify-center space-x-2" disabled>
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                            </svg>
+                                            <span>Jeda</span>
+                                        </button>
+                                        <button id="btnReset" class="btn btn-outline rounded-lg px-6 py-2.5 flex-1 flex items-center justify-center space-x-2">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                                            </svg>
+                                            <span>Reset</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Method Selection -->
+                            <div class="bg-white rounded-lg border border-border p-6 shadow-md">
+                                <h3 class="text-lg font-heading font-semibold text-text-primary mb-4 flex items-center">
+                                    <svg class="w-5 h-5 mr-2 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>
+                                    </svg>
+                                    Pilih Metode Pengukuran
+                                </h3>
+                                <div class="grid md:grid-cols-2 gap-4">
+                                    <div class="method-card selected border-2 border-border rounded-lg p-4" id="methodFloating">
+                                        <div class="flex items-start space-x-3">
+                                            <div class="flex-shrink-0 w-10 h-10 bg-primary-100 rounded-lg flex items-center justify-center mt-1">
+                                                <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 0v4m0-4h4m-4 0H8"/>
+                                                </svg>
+                                            </div>
+                                            <div class="flex-1">
+                                                <h4 class="font-heading font-semibold text-text-primary mb-1">Metode Melayang</h4>
+                                                <p class="text-sm text-text-secondary leading-relaxed font-caption">Menyesuaikan tegangan hingga gaya listrik menyeimbangkan gaya berat tetes.</p>
+                                                <div class="mt-3 text-xs text-primary font-mono bg-primary-50 rounded px-2 py-1 inline-block">Gunakan tegangan halus untuk kestabilan.</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="method-card border-2 border-border rounded-lg p-4" id="methodRising">
+                                        <div class="flex items-start space-x-3">
+                                            <div class="flex-shrink-0 w-10 h-10 bg-accent-100 rounded-lg flex items-center justify-center mt-1">
+                                                <svg class="w-5 h-5 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v12m6-6H6"/>
+                                                </svg>
+                                            </div>
+                                            <div class="flex-1">
+                                                <h4 class="font-heading font-semibold text-text-primary mb-1">Metode Naik/Turun</h4>
+                                                <p class="text-sm text-text-secondary leading-relaxed font-caption">Mengukur v₁ saat naik dengan medan dan v₂ saat jatuh tanpa medan.</p>
+                                                <div class="mt-3 text-xs text-accent font-mono bg-accent-50 rounded px-2 py-1 inline-block">Catat v₁ dan v₂ berulang kali.</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right: Sidebar (kept as-is, just moved) -->
+                <div class="lg:col-span-4 min-w-0 space-y-6">
+                    <!-- Real-time Measurements -->
+                    <div class="bg-white rounded-lg border border-border p-6 shadow-md">
+                        <h3 class="text-lg font-heading font-semibold text-text-primary mb-4 flex items-center">
+                            <svg class="w-5 h-5 mr-2 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                            </svg>
+                            Pengukuran Real-Time
+                        </h3>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-3 leading-tight">
+                            <div class="bg-surface rounded-lg p-4">
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="text-sm text-text-secondary font-caption">Kecepatan Naik (v₁)</span>
+                                    <div class="tooltip-trigger"></div>
+                                </div>
+                                <div id="v1Display" class="text-2xl font-bold text-primary font-mono">0.000</div>
+                                <div class="text-xs text-text-tertiary font-caption">× 10⁻⁴ m/s</div>
+                            </div>
+                            <div class="bg-surface rounded-lg p-4">
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="text-sm text-text-secondary font-caption">Kecepatan Turun (v₂)</span>
+                                    <div class="tooltip-trigger"></div>
+                                </div>
+                                <div id="v2Display" class="text-2xl font-bold text-accent font-mono">0.000</div>
+                                <div class="text-xs text-text-tertiary font-caption">× 10⁻⁴ m/s</div>
+                            </div>
+                            <div class="bg-surface rounded-lg p-4">
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="text-sm text-text-secondary font-caption">Jari-jari Tetes (r)</span>
+                                    <div class="tooltip-trigger"></div>
+                                </div>
+                                <div id="radiusDisplay" class="text-2xl font-bold text-success font-mono">0.000</div>
+                                <div class="text-xs text-text-tertiary font-caption">× 10⁻⁶ m</div>
+                            </div>
+                            <div class="bg-gradient-to-br from-primary-50 to-accent-50 rounded-lg p-4 border border-primary-200">
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="text-sm text-primary font-semibold font-caption">Muatan (q)</span>
+                                    <div class="tooltip-trigger"></div>
+                                </div>
+                                <div id="chargeDisplay" class="text-3xl font-bold text-primary font-mono">0.000</div>
+                                <div class="text-xs text-primary font-caption">× 10⁻¹⁹ C</div>
+                            </div>
+                            <div class="bg-gradient-to-br from-accent-50 to-primary-50 rounded-lg p-4 border border-accent-200">
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="text-sm text-accent font-semibold font-caption">Koreksi Cunningham (q<sub>c</sub>)</span>
+                                    <div class="tooltip-trigger"></div>
+                                </div>
+                                <div id="chargeCorrectedDisplay" class="text-3xl font-bold text-accent font-mono">0.000</div>
+                                <div class="text-xs text-accent font-caption">× 10⁻¹⁹ C</div>
+                            </div>
+                        </div>
+                        <button id="btnCapture" class="btn btn-primary w-full rounded-lg py-3 mt-4 flex items-center justify-center space-x-2" disabled>
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                            </svg>
+                            <span>Simpan Data Pengukuran</span>
+                        </button>
+                    </div>
+
+                    <!-- Captured Data Table -->
+                    <div class="bg-white rounded-lg border border-border p-6 shadow-md">
+                        <h3 class="text-lg font-heading font-semibold text-text-primary mb-4 flex items-center">
+                            <svg class="w-5 h-5 mr-2 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2h-2a2 2 0 00-2 2"/>
+                            </svg>
+                            Data Tersimpan
+                            <span id="dataCount" class="ml-auto text-sm font-normal text-text-secondary font-caption">0 pengukuran</span>
+                        </h3>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-sm">
+                                <thead>
+                                    <tr class="border-b border-border">
+                                        <th class="px-3 py-2 text-left">No</th>
+                                        <th class="px-3 py-2 text-left">q (×10⁻¹⁹ C)</th>
+                                        <th class="px-3 py-2 text-left">qᶜ (×10⁻¹⁹ C)</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="dataTableBody">
+                                    <tr>
+                                        <td colspan="3" class="text-center py-8 text-text-tertiary">Belum ada data tersimpan</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Quick Tips -->
+                    <div class="bg-gradient-to-br from-primary-50 to-accent-50 rounded-lg border border-primary-200 p-6">
+                        <h3 class="text-base font-heading font-semibold text-primary mb-3 flex items-center">
+                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                            Tips Eksperimen
+                        </h3>
+                        <ul class="space-y-2 text-sm text-text-secondary">
+                            <li class="flex items-start space-x-2">
+                                <svg class="w-4 h-4 text-primary flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+                                <span class="font-caption">Lakukan minimal 10 pengukuran untuk hasil akurat</span>
+                            </li>
+                            <li class="flex items-start space-x-2">
+                                <svg class="w-4 h-4 text-primary flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+                                <span class="font-caption">Variasikan tegangan untuk mendapatkan data beragam</span>
+                            </li>
+                            <li class="flex items-start space-x-2">
+                                <svg class="w-4 h-4 text-primary flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+                                <span class="font-caption">Gunakan tampilan mikroskop untuk pengukuran presisi</span>
+                            </li>
+                            <li class="flex items-start space-x-2">
+                                <svg class="w-4 h-4 text-primary flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+                                <span class="font-caption">Perhatikan koreksi Cunningham untuk tetes kecil</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Navigation Footer (full width) -->
+            <div data-embed-hide="true" class="flex items-center justify-between mt-8 pt-6 border-t border-border">
+                <a href="index.html#stage-1" class="btn btn-outline rounded-lg px-6 py-3 flex items-center space-x-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+                    <span>Kembali ke Tahap 1</span>
+                </a>
+                <a href="index.html#stage-3" id="btnNextStage" class="btn btn-primary rounded-lg px-6 py-3 flex items-center space-x-2 opacity-50 cursor-not-allowed pointer-events-none">
+                    <span>Lanjut ke Analisis Data</span>
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                </a>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer data-embed-hide="true" class="bg-text-primary text-white py-8 mt-12">
+        <div class="container-custom">
+            <div class="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
+                <div class="flex items-center space-x-3">
+                    <svg class="w-8 h-8" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="20" cy="20" r="18" fill="white" opacity="0.1"/>
+                        <path d="M20 8C13.373 8 8 13.373 8 20C8 26.627 13.373 32 20 32C26.627 32 32 26.627 32 20C32 13.373 26.627 8 20 8ZM20 10C25.514 10 30 14.486 30 20C30 25.514 25.514 30 20 30C14.486 30 10 25.514 10 20C10 14.486 14.486 10 20 10Z" fill="white"/>
+                        <circle cx="20" cy="20" r="4" fill="#06B6D4"/>
+                    </svg>
+                    <div>
+                        <h3 class="text-base font-heading font-semibold">FisikaSeru</h3>
+                        <p class="text-xs text-white/70 font-caption">Laboratorium Virtual</p>
+                    </div>
+                </div>
+                <p class="text-sm text-white/70 font-caption">© 2025 FisikaSeru. Hak Cipta Dilindungi.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script type="module" src="./js/main.js"></script>
+<script id="dhws-dataInjector" src="../../../public/dhws-data-injector.js"></script>
+</body>
+</html>

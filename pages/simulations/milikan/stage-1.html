@@ -1,0 +1,1180 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Tahap 1 Eksperimen Tetes Minyak Millikan - Teori dan Dasar Fisika untuk Penentuan Muatan Elektron">
+    <title>Tahap 1: Teori Dasar - Eksperimen Millikan | FisikaSeru</title>
+    <link rel="stylesheet" href="../../../css/main.css">
+
+    <script>
+        // Embedded mode: when loaded inside the SPA iframe, hide duplicate header/progress.
+        if (window !== window.parent) document.documentElement.classList.add('embedded');
+    </script>
+    
+    <!-- MathJax for Mathematical Notation -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']],
+                processEscapes: true
+            },
+            svg: {
+                fontCache: 'global'
+            }
+        };
+    </script>
+    
+    <style>
+        /* Custom styles for theory content */
+        .theory-section {
+            scroll-margin-top: 100px;
+        }
+        
+        .force-diagram {
+            transition: transform 0.3s ease;
+        }
+        
+        .force-diagram:hover {
+            transform: scale(1.02);
+        }
+        
+        .formula-card {
+            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+        
+        .formula-card.expanded {
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        
+        .collapse-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+        
+        .collapse-content.expanded {
+            max-height: 2000px;
+        }
+        
+        .progress-step {
+            position: relative;
+        }
+        
+        .progress-step::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 100%;
+            width: 100%;
+            height: 2px;
+            background: #E2E8F0;
+            transform: translateY(-50%);
+        }
+        
+        .progress-step:last-child::after {
+            display: none;
+        }
+        
+        .progress-step.active .step-circle {
+            background: #3B82F6;
+            color: white;
+            border-color: #3B82F6;
+        }
+        
+        .progress-step.completed .step-circle {
+            background: #10B981;
+            color: white;
+            border-color: #10B981;
+        }
+        
+        .tooltip-trigger {
+            position: relative;
+            cursor: help;
+        }
+        
+        .tooltip-content {
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%) translateY(-8px);
+            background: #1E293B;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+            z-index: 100;
+        }
+        
+        .tooltip-trigger:hover .tooltip-content {
+            opacity: 1;
+        }
+        
+        .vector-arrow {
+            animation: pulse-arrow 2s ease-in-out infinite;
+        }
+        
+        @keyframes pulse-arrow {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+        
+        /* Smooth scroll behavior */
+        html {
+            scroll-behavior: smooth;
+        }
+        
+        /* Print styles for academic use */
+        @media print {
+            .no-print {
+                display: none !important;
+            }
+            
+            .formula-card {
+                page-break-inside: avoid;
+            }
+        }
+
+        /* Embedded inside milikan/index.html iframe: hide duplicated top UI */
+        html.embedded body [data-embed-hide="true"] {
+            display: none !important;
+        }
+    </style>
+  <script type="module" async src="https://static.rocket.new/rocket-web.js?_cfg=https%3A%2F%2Ffisikaseru8923back.builtwithrocket.new&_be=https%3A%2F%2Fapplication.rocket.new&_v=0.1.12"></script>
+  <script type="module" defer src="https://static.rocket.new/rocket-shot.js?v=0.0.2"></script>
+  </head>
+<body class="bg-background">
+    <!-- Navigation Header -->
+    <nav data-embed-hide="true" class="bg-white border-b border-border sticky top-0 z-50 shadow-sm no-print">
+        <div class="container-custom">
+            <div class="flex items-center justify-between h-16">
+                <!-- Logo & Lab Title -->
+                <div class="flex items-center space-x-4">
+                    <a href="../../landing_page.html" class="flex items-center space-x-3 hover:opacity-80 transition-opacity">
+                        <svg class="w-10 h-10" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="20" cy="20" r="18" fill="#3B82F6" opacity="0.1"/>
+                            <path d="M20 8C13.373 8 8 13.373 8 20C8 26.627 13.373 32 20 32C26.627 32 32 26.627 32 20C32 13.373 26.627 8 20 8ZM20 10C25.514 10 30 14.486 30 20C30 25.514 25.514 30 20 30C14.486 30 10 25.514 10 20C10 14.486 14.486 10 20 10Z" fill="#3B82F6"/>
+                            <circle cx="20" cy="20" r="4" fill="#06B6D4"/>
+                            <path d="M20 12V16M20 24V28M12 20H16M24 20H28" stroke="#3B82F6" stroke-width="2" stroke-linecap="round"/>
+                        </svg>
+                        <div>
+                            <h1 class="text-lg font-heading font-semibold text-primary">FisikaSeru</h1>
+                            <p class="text-xs text-text-secondary font-caption">Laboratorium Virtual</p>
+                        </div>
+                    </a>
+                    
+                    <div class="hidden md:block h-8 w-px bg-border"></div>
+                    
+                    <div class="hidden md:block">
+                        <h2 class="text-sm font-heading font-semibold text-text-primary">Eksperimen Tetes Minyak Millikan</h2>
+                        <p class="text-xs text-text-secondary font-caption">Tahap 1: Teori dan Dasar Fisika</p>
+                    </div>
+                </div>
+                
+                <!-- Action Buttons -->
+                <div class="flex items-center space-x-3">
+                    <button class="btn btn-ghost rounded-lg px-4 py-2 text-sm hidden md:inline-flex items-center space-x-2" onclick="window.print()">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/>
+                        </svg>
+                        <span>Cetak</span>
+                    </button>
+                    
+                    <a href="../../landing_page.html" class="btn btn-outline rounded-lg px-4 py-2 text-sm inline-flex items-center space-x-2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                        </svg>
+                        <span class="hidden sm:inline">Keluar</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Progress Indicator -->
+    <section data-embed-hide="true" class="bg-surface border-b border-border py-6 no-print">
+        <div class="container-custom">
+            <div class="max-w-4xl mx-auto">
+                <div class="flex items-center justify-between">
+                    <!-- Step 1: Preliminary (Completed) -->
+                    <div class="progress-step completed flex-1">
+                        <div class="flex flex-col items-center">
+                            <div class="step-circle w-10 h-10 rounded-full border-2 flex items-center justify-center font-semibold text-sm mb-2 bg-success text-white border-success">
+                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                                </svg>
+                            </div>
+                            <span class="text-xs font-medium text-success font-caption">Pendahuluan</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Step 2: Theory (Active) -->
+                    <div class="progress-step active flex-1">
+                        <div class="flex flex-col items-center">
+                            <div class="step-circle w-10 h-10 rounded-full border-2 flex items-center justify-center font-semibold text-sm mb-2 bg-primary text-white border-primary">
+                                1
+                            </div>
+                            <span class="text-xs font-medium text-primary font-caption">Teori Dasar</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Step 3: Simulation -->
+                    <div class="progress-step flex-1">
+                        <div class="flex flex-col items-center">
+                            <div class="step-circle w-10 h-10 rounded-full border-2 border-border flex items-center justify-center font-semibold text-sm text-text-tertiary mb-2 bg-white">
+                                2
+                            </div>
+                            <span class="text-xs font-medium text-text-tertiary font-caption">Simulasi</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Step 4: Analysis -->
+                    <div class="progress-step flex-1">
+                        <div class="flex flex-col items-center">
+                            <div class="step-circle w-10 h-10 rounded-full border-2 border-border flex items-center justify-center font-semibold text-sm text-text-tertiary mb-2 bg-white">
+                                3
+                            </div>
+                            <span class="text-xs font-medium text-text-tertiary font-caption">Analisis</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        // Report content height to parent so the SPA iframe can auto-resize.
+        (function () {
+            if (window === window.parent) return;
+
+            function getDocHeight() {
+                const el = document.documentElement;
+                const body = document.body;
+                return Math.ceil(Math.max(
+                    el ? el.scrollHeight : 0,
+                    body ? body.scrollHeight : 0,
+                    el ? el.offsetHeight : 0,
+                    body ? body.offsetHeight : 0
+                ));
+            }
+
+            let rafId = 0;
+            function scheduleSend() {
+                cancelAnimationFrame(rafId);
+                rafId = requestAnimationFrame(() => {
+                    window.parent.postMessage({ type: 'milikan:iframeHeight', height: getDocHeight() }, '*');
+                });
+            }
+
+            window.addEventListener('load', scheduleSend);
+            window.addEventListener('resize', scheduleSend);
+            document.addEventListener('transitionend', scheduleSend, true);
+
+            if (window.ResizeObserver) {
+                const ro = new ResizeObserver(scheduleSend);
+                ro.observe(document.documentElement);
+            }
+
+            scheduleSend();
+            setTimeout(scheduleSend, 250);
+        })();
+    </script>
+
+    <!-- Main Content -->
+    <main class="py-8 lg:py-12">
+        <div class="container-custom">
+            <div class="max-w-5xl mx-auto">
+                <!-- Introduction Section -->
+                <section class="theory-section mb-12 animate-fade-in">
+                    <div class="bg-white rounded-2xl border border-border shadow-md p-6 lg:p-8">
+                        <div class="flex items-start space-x-4 mb-6">
+                            <div class="flex-shrink-0 w-12 h-12 bg-primary-100 rounded-xl flex items-center justify-center">
+                                <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+                                </svg>
+                            </div>
+                            <div class="flex-1">
+                                <h2 class="text-2xl lg:text-3xl font-heading font-bold text-text-primary mb-3">
+                                    Teori Eksperimen Tetes Minyak Millikan
+                                </h2>
+                                <p class="text-text-secondary leading-relaxed">
+                                    Eksperimen Tetes Minyak Millikan adalah salah satu eksperimen paling penting dalam sejarah fisika modern. Dilakukan pertama kali oleh Robert A. Millikan pada tahun 1909, eksperimen ini berhasil menentukan muatan elektron fundamental (e) dengan presisi tinggi.
+                                </p>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-primary-50 border border-primary-200 rounded-xl p-6 space-y-3">
+                            <h3 class="text-lg font-heading font-semibold text-primary flex items-center space-x-2">
+                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+                                </svg>
+                                <span>Tujuan Eksperimen</span>
+                            </h3>
+                            <ul class="space-y-2 text-sm text-text-primary">
+                                <li class="flex items-start space-x-2">
+                                    <svg class="w-5 h-5 text-primary flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                                    </svg>
+                                    <span>Menentukan nilai muatan elektron fundamental (e) secara eksperimental</span>
+                                </li>
+                                <li class="flex items-start space-x-2">
+                                    <svg class="w-5 h-5 text-primary flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                                    </svg>
+                                    <span>Membuktikan bahwa muatan listrik terkuantisasi dalam kelipatan muatan elektron</span>
+                                </li>
+                                <li class="flex items-start space-x-2">
+                                    <svg class="w-5 h-5 text-primary flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                                    </svg>
+                                    <span>Memahami kesetimbangan gaya pada partikel bermuatan dalam medan listrik</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Force Diagrams Section -->
+                <section class="theory-section mb-12 animate-fade-in" id="force-diagrams">
+                    <div class="bg-white rounded-2xl border border-border shadow-md p-6 lg:p-8">
+                        <div class="mb-6">
+                            <h2 class="text-2xl lg:text-3xl font-heading font-bold text-text-primary mb-3">
+                                Diagram Gaya pada Tetes Minyak
+                            </h2>
+                            <p class="text-text-secondary leading-relaxed">
+                                Tetes minyak dalam eksperimen ini dipengaruhi oleh empat gaya utama yang bekerja secara simultan. Pemahaman kesetimbangan gaya-gaya ini adalah kunci untuk menentukan muatan elektron.
+                            </p>
+                        </div>
+
+                        <!-- Force Diagram Visualization -->
+                        <div class="grid lg:grid-cols-2 gap-8 mb-8">
+                            <!-- Diagram 1: All Forces -->
+                            <div class="force-diagram bg-gradient-to-br from-primary-50 to-accent-50 rounded-xl p-6 border border-primary-200">
+                                <h3 class="text-lg font-heading font-semibold text-text-primary mb-4 text-center">
+                                    Kondisi Melayang (Floating)
+                                </h3>
+                                
+                                <div class="relative h-80 flex items-center justify-center">
+                                    <!-- SVG Force Diagram -->
+                                    <svg viewBox="0 0 300 300" class="w-full h-full">
+                                        <!-- Oil Drop Circle -->
+                                        <circle cx="150" cy="150" r="30" fill="#F59E0B" stroke="#D97706" stroke-width="2" opacity="0.9"/>
+                                        <text x="150" y="155" text-anchor="middle" fill="#1E293B" font-size="12" font-weight="600">Tetes</text>
+                                        <text x="150" y="168" text-anchor="middle" fill="#1E293B" font-size="12" font-weight="600">Minyak</text>
+                                        
+                                        <!-- Gravitational Force (Fg) - Downward -->
+                                        <defs>
+                                            <marker id="arrowdown" markerWidth="10" markerHeight="10" refX="5" refY="5" orient="auto">
+                                                <path d="M 0 0 L 10 5 L 0 10 z" fill="#EF4444"/>
+                                            </marker>
+                                        </defs>
+                                        <line x1="150" y1="180" x2="150" y2="250" stroke="#EF4444" stroke-width="3" marker-end="url(#arrowdown)" class="vector-arrow"/>
+                                        <text x="170" y="220" fill="#EF4444" font-size="14" font-weight="700">Fg</text>
+                                        
+                                        <!-- Electric Force (Fe) - Upward -->
+                                        <defs>
+                                            <marker id="arrowup" markerWidth="10" markerHeight="10" refX="5" refY="5" orient="auto">
+                                                <path d="M 0 0 L 10 5 L 0 10 z" fill="#3B82F6"/>
+                                            </marker>
+                                        </defs>
+                                        <line x1="150" y1="120" x2="150" y2="50" stroke="#3B82F6" stroke-width="3" marker-end="url(#arrowup)" class="vector-arrow"/>
+                                        <text x="170" y="80" fill="#3B82F6" font-size="14" font-weight="700">Fe</text>
+                                        
+                                        <!-- Stokes Force (Fs) - Upward (smaller) -->
+                                        <line x1="130" y1="120" x2="130" y2="70" stroke="#10B981" stroke-width="2" marker-end="url(#arrowup)" class="vector-arrow"/>
+                                        <text x="105" y="95" fill="#10B981" font-size="12" font-weight="600">Fs</text>
+                                        
+                                        <!-- Air Resistance (Fa) - Downward (smaller) -->
+                                        <line x1="170" y1="180" x2="170" y2="230" stroke="#F59E0B" stroke-width="2" marker-end="url(#arrowdown)" class="vector-arrow"/>
+                                        <text x="185" y="205" fill="#F59E0B" font-size="12" font-weight="600">Fa</text>
+                                    </svg>
+                                </div>
+                                
+                                <div class="mt-4 text-center">
+                                    <p class="text-sm text-text-secondary font-caption">
+                                        Kondisi kesetimbangan: <span class="font-semibold text-primary">Fe + Fs = Fg + Fa</span>
+                                    </p>
+                                </div>
+                            </div>
+
+                            <!-- Diagram 2: Rising/Falling -->
+                            <div class="force-diagram bg-gradient-to-br from-accent-50 to-primary-50 rounded-xl p-6 border border-accent-200">
+                                <h3 class="text-lg font-heading font-semibold text-text-primary mb-4 text-center">
+                                    Kondisi Naik/Turun
+                                </h3>
+                                
+                                <div class="relative h-80 flex items-center justify-center">
+                                    <svg viewBox="0 0 300 300" class="w-full h-full">
+                                        <!-- Oil Drop Circle -->
+                                        <circle cx="150" cy="150" r="30" fill="#F59E0B" stroke="#D97706" stroke-width="2" opacity="0.9"/>
+                                        <text x="150" y="155" text-anchor="middle" fill="#1E293B" font-size="12" font-weight="600">Tetes</text>
+                                        <text x="150" y="168" text-anchor="middle" fill="#1E293B" font-size="12" font-weight="600">Minyak</text>
+                                        
+                                        <!-- Gravitational Force (Fg) -->
+                                        <line x1="150" y1="180" x2="150" y2="250" stroke="#EF4444" stroke-width="3" marker-end="url(#arrowdown)" class="vector-arrow"/>
+                                        <text x="170" y="220" fill="#EF4444" font-size="14" font-weight="700">Fg</text>
+                                        
+                                        <!-- Stokes Force (Fs) - Opposing motion -->
+                                        <line x1="150" y1="120" x2="150" y2="60" stroke="#10B981" stroke-width="3" marker-end="url(#arrowup)" class="vector-arrow"/>
+                                        <text x="170" y="85" fill="#10B981" font-size="14" font-weight="700">Fs</text>
+                                        
+                                        <!-- Velocity indicator -->
+                                        <defs>
+                                            <marker id="arrowvelocity" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto">
+                                                <path d="M 0 0 L 8 4 L 0 8 z" fill="#06B6D4"/>
+                                            </marker>
+                                        </defs>
+                                        <line x1="200" y1="150" x2="250" y2="150" stroke="#06B6D4" stroke-width="2" marker-end="url(#arrowvelocity)" stroke-dasharray="5,5"/>
+                                        <text x="210" y="140" fill="#06B6D4" font-size="12" font-weight="600">v</text>
+                                    </svg>
+                                </div>
+                                
+                                <div class="mt-4 text-center">
+                                    <p class="text-sm text-text-secondary font-caption">
+                                        Kecepatan terminal: <span class="font-semibold text-accent">Fg = Fs</span>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Force Descriptions -->
+                        <div class="grid md:grid-cols-2 gap-4">
+                            <!-- Fg Card -->
+                            <div class="bg-error-50 border border-error-200 rounded-xl p-4">
+                                <div class="flex items-start space-x-3">
+                                    <div class="flex-shrink-0 w-10 h-10 bg-error-100 rounded-lg flex items-center justify-center">
+                                        <svg class="w-5 h-5 text-error" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"/>
+                                        </svg>
+                                    </div>
+                                    <div class="flex-1">
+                                        <h4 class="font-heading font-semibold text-error mb-1">
+                                            Gaya Gravitasi (Fg)
+                                            <span class="tooltip-trigger ml-1">
+                                                <svg class="w-4 h-4 inline text-error-dark" fill="currentColor" viewBox="0 0 20 20">
+                                                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+                                                </svg>
+                                                <span class="tooltip-content">Gaya tarik bumi pada tetes minyak</span>
+                                            </span>
+                                        </h4>
+                                        <p class="text-sm text-text-secondary">
+                                            Gaya gravitasi yang menarik tetes minyak ke bawah, sebanding dengan massa tetes.
+                                        </p>
+                                        <p class="text-xs text-error-dark font-mono mt-2">Fg = m × g</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Fe Card -->
+                            <div class="bg-primary-50 border border-primary-200 rounded-xl p-4">
+                                <div class="flex items-start space-x-3">
+                                    <div class="flex-shrink-0 w-10 h-10 bg-primary-100 rounded-lg flex items-center justify-center">
+                                        <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"/>
+                                        </svg>
+                                    </div>
+                                    <div class="flex-1">
+                                        <h4 class="font-heading font-semibold text-primary mb-1">
+                                            Gaya Listrik (Fe)
+                                            <span class="tooltip-trigger ml-1">
+                                                <svg class="w-4 h-4 inline text-primary-dark" fill="currentColor" viewBox="0 0 20 20">
+                                                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+                                                </svg>
+                                                <span class="tooltip-content">Gaya medan listrik pada muatan</span>
+                                            </span>
+                                        </h4>
+                                        <p class="text-sm text-text-secondary">
+                                            Gaya elektrostatik dari medan listrik yang bekerja pada muatan tetes minyak.
+                                        </p>
+                                        <p class="text-xs text-primary-dark font-mono mt-2">Fe = q × E</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Fs Card -->
+                            <div class="bg-success-50 border border-success-200 rounded-xl p-4">
+                                <div class="flex items-start space-x-3">
+                                    <div class="flex-shrink-0 w-10 h-10 bg-success-100 rounded-lg flex items-center justify-center">
+                                        <svg class="w-5 h-5 text-success" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"/>
+                                        </svg>
+                                    </div>
+                                    <div class="flex-1">
+                                        <h4 class="font-heading font-semibold text-success mb-1">
+                                            Gaya Stokes (Fs)
+                                            <span class="tooltip-trigger ml-1">
+                                                <svg class="w-4 h-4 inline text-success-dark" fill="currentColor" viewBox="0 0 20 20">
+                                                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+                                                </svg>
+                                                <span class="tooltip-content">Gaya gesekan fluida viskos</span>
+                                            </span>
+                                        </h4>
+                                        <p class="text-sm text-text-secondary">
+                                            Gaya hambat viskos dari udara yang melawan gerak tetes minyak.
+                                        </p>
+                                        <p class="text-xs text-success-dark font-mono mt-2">Fs = 6πηrv</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Fa Card -->
+                            <div class="bg-warning-50 border border-warning-200 rounded-xl p-4">
+                                <div class="flex items-start space-x-3">
+                                    <div class="flex-shrink-0 w-10 h-10 bg-warning-100 rounded-lg flex items-center justify-center">
+                                        <svg class="w-5 h-5 text-warning" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                                        </svg>
+                                    </div>
+                                    <div class="flex-1">
+                                        <h4 class="font-heading font-semibold text-warning mb-1">
+                                            Gaya Hambat Udara (Fa)
+                                            <span class="tooltip-trigger ml-1">
+                                                <svg class="w-4 h-4 inline text-warning-dark" fill="currentColor" viewBox="0 0 20 20">
+                                                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+                                                </svg>
+                                                <span class="tooltip-content">Hambatan udara pada partikel kecil</span>
+                                            </span>
+                                        </h4>
+                                        <p class="text-sm text-text-secondary">
+                                            Gaya hambat tambahan dari molekul udara pada tetes minyak bergerak.
+                                        </p>
+                                        <p class="text-xs text-warning-dark font-mono mt-2">Fa ∝ v²</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Mathematical Formulas Section -->
+                <section class="theory-section mb-12 animate-fade-in" id="formulas">
+                    <div class="bg-white rounded-2xl border border-border shadow-md p-6 lg:p-8">
+                        <div class="mb-6">
+                            <h2 class="text-2xl lg:text-3xl font-heading font-bold text-text-primary mb-3">
+                                Persamaan Matematika
+                            </h2>
+                            <p class="text-text-secondary leading-relaxed">
+                                Berikut adalah persamaan-persamaan kunci yang digunakan dalam eksperimen Millikan. Klik pada setiap kartu untuk melihat detail lengkap.
+                            </p>
+                        </div>
+
+                        <div class="space-y-4">
+                            <!-- Formula 1: Radius Calculation -->
+                            <div class="formula-card bg-surface border border-border rounded-xl overflow-hidden">
+                                <button class="w-full p-5 flex items-center justify-between hover:bg-surface-hover transition-colors" onclick="toggleFormula('formula1')">
+                                    <div class="flex items-center space-x-3">
+                                        <div class="w-10 h-10 bg-primary-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                                            <span class="text-primary font-bold font-heading">1</span>
+                                        </div>
+                                        <div class="text-left">
+                                            <h3 class="font-heading font-semibold text-text-primary">Perhitungan Jari-jari Tetes</h3>
+                                            <p class="text-sm text-text-secondary font-caption">Menentukan ukuran tetes minyak dari kecepatan jatuh</p>
+                                        </div>
+                                    </div>
+                                    <svg class="w-5 h-5 text-text-tertiary transition-transform formula-chevron" id="chevron-formula1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                                    </svg>
+                                </button>
+                                
+                                <div class="collapse-content" id="content-formula1">
+                                    <div class="px-5 pb-5 border-t border-border pt-5 space-y-4">
+                                        <div class="bg-white rounded-lg p-4 border border-primary-200">
+                                            <p class="text-center text-lg mb-2">$$r = \sqrt{\frac{9\eta v_1}{2g(\rho_{oil} - \rho_{air})}}$$</p>
+                                        </div>
+                                        
+                                        <div class="space-y-2 text-sm">
+                                            <h4 class="font-semibold text-text-primary font-heading">Keterangan Variabel:</h4>
+                                            <div class="grid md:grid-cols-2 gap-3">
+                                                <div class="flex items-start space-x-2">
+                                                    <span class="text-primary font-mono">r</span>
+                                                    <span class="text-text-secondary">= Jari-jari tetes minyak (m)</span>
+                                                </div>
+                                                <div class="flex items-start space-x-2">
+                                                    <span class="text-primary font-mono">η</span>
+                                                    <span class="text-text-secondary">= Viskositas udara (Pa·s)</span>
+                                                </div>
+                                                <div class="flex items-start space-x-2">
+                                                    <span class="text-primary font-mono">v₁</span>
+                                                    <span class="text-text-secondary">= Kecepatan jatuh (m/s)</span>
+                                                </div>
+                                                <div class="flex items-start space-x-2">
+                                                    <span class="text-primary font-mono">g</span>
+                                                    <span class="text-text-secondary">= Percepatan gravitasi (9.8 m/s²)</span>
+                                                </div>
+                                                <div class="flex items-start space-x-2">
+                                                    <span class="text-primary font-mono">ρ_oil</span>
+                                                    <span class="text-text-secondary">= Massa jenis minyak (kg/m³)</span>
+                                                </div>
+                                                <div class="flex items-start space-x-2">
+                                                    <span class="text-primary font-mono">ρ_air</span>
+                                                    <span class="text-text-secondary">= Massa jenis udara (kg/m³)</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="bg-accent-50 border border-accent-200 rounded-lg p-3">
+                                            <p class="text-sm text-text-secondary">
+                                                <strong class="text-accent">Catatan:</strong> Persamaan ini diturunkan dari kesetimbangan gaya gravitasi dan gaya Stokes saat tetes jatuh bebas tanpa medan listrik.
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Formula 2: Charge Calculation -->
+                            <div class="formula-card bg-surface border border-border rounded-xl overflow-hidden">
+                                <button class="w-full p-5 flex items-center justify-between hover:bg-surface-hover transition-colors" onclick="toggleFormula('formula2')">
+                                    <div class="flex items-center space-x-3">
+                                        <div class="w-10 h-10 bg-accent-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                                            <span class="text-accent font-bold font-heading">2</span>
+                                        </div>
+                                        <div class="text-left">
+                                            <h3 class="font-heading font-semibold text-text-primary">Perhitungan Muatan Elektron</h3>
+                                            <p class="text-sm text-text-secondary font-caption">Menentukan muatan dari kesetimbangan gaya listrik</p>
+                                        </div>
+                                    </div>
+                                    <svg class="w-5 h-5 text-text-tertiary transition-transform formula-chevron" id="chevron-formula2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                                    </svg>
+                                </button>
+                                
+                                <div class="collapse-content" id="content-formula2">
+                                    <div class="px-5 pb-5 border-t border-border pt-5 space-y-4">
+                                        <div class="bg-white rounded-lg p-4 border border-accent-200">
+                                            <p class="text-center text-lg mb-2">$$q = \frac{6\pi\eta r(v_1 + v_2)}{E}$$</p>
+                                        </div>
+                                        
+                                        <div class="space-y-2 text-sm">
+                                            <h4 class="font-semibold text-text-primary font-heading">Keterangan Variabel:</h4>
+                                            <div class="grid md:grid-cols-2 gap-3">
+                                                <div class="flex items-start space-x-2">
+                                                    <span class="text-accent font-mono">q</span>
+                                                    <span class="text-text-secondary">= Muatan tetes minyak (C)</span>
+                                                </div>
+                                                <div class="flex items-start space-x-2">
+                                                    <span class="text-accent font-mono">η</span>
+                                                    <span class="text-text-secondary">= Viskositas udara (Pa·s)</span>
+                                                </div>
+                                                <div class="flex items-start space-x-2">
+                                                    <span class="text-accent font-mono">r</span>
+                                                    <span class="text-text-secondary">= Jari-jari tetes (m)</span>
+                                                </div>
+                                                <div class="flex items-start space-x-2">
+                                                    <span class="text-accent font-mono">v₁</span>
+                                                    <span class="text-text-secondary">= Kecepatan jatuh (m/s)</span>
+                                                </div>
+                                                <div class="flex items-start space-x-2">
+                                                    <span class="text-accent font-mono">v₂</span>
+                                                    <span class="text-text-secondary">= Kecepatan naik (m/s)</span>
+                                                </div>
+                                                <div class="flex items-start space-x-2">
+                                                    <span class="text-accent font-mono">E</span>
+                                                    <span class="text-text-secondary">= Medan listrik (V/m)</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="bg-primary-50 border border-primary-200 rounded-lg p-3">
+                                            <p class="text-sm text-text-secondary">
+                                                <strong class="text-primary">Catatan:</strong> Persamaan ini menggabungkan metode floating dan rising/falling untuk menentukan muatan dengan akurasi tinggi.
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Formula 3: Cunningham Correction -->
+                            <div class="formula-card bg-surface border border-border rounded-xl overflow-hidden">
+                                <button class="w-full p-5 flex items-center justify-between hover:bg-surface-hover transition-colors" onclick="toggleFormula('formula3')">
+                                    <div class="flex items-center space-x-3">
+                                        <div class="w-10 h-10 bg-success-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                                            <span class="text-success font-bold font-heading">3</span>
+                                        </div>
+                                        <div class="text-left">
+                                            <h3 class="font-heading font-semibold text-text-primary">Koreksi Cunningham</h3>
+                                            <p class="text-sm text-text-secondary font-caption">Koreksi untuk partikel sangat kecil dalam udara</p>
+                                        </div>
+                                    </div>
+                                    <svg class="w-5 h-5 text-text-tertiary transition-transform formula-chevron" id="chevron-formula3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                                    </svg>
+                                </button>
+                                
+                                <div class="collapse-content" id="content-formula3">
+                                    <div class="px-5 pb-5 border-t border-border pt-5 space-y-4">
+                                        <div class="bg-white rounded-lg p-4 border border-success-200">
+                                            <p class="text-center text-lg mb-2">$$q_c = q \times \left(1 + \frac{b}{pr}\right)^{-3/2}$$</p>
+                                        </div>
+                                        
+                                        <div class="space-y-2 text-sm">
+                                            <h4 class="font-semibold text-text-primary font-heading">Keterangan Variabel:</h4>
+                                            <div class="grid md:grid-cols-2 gap-3">
+                                                <div class="flex items-start space-x-2">
+                                                    <span class="text-success font-mono">q_c</span>
+                                                    <span class="text-text-secondary">= Muatan terkoreksi (C)</span>
+                                                </div>
+                                                <div class="flex items-start space-x-2">
+                                                    <span class="text-success font-mono">q</span>
+                                                    <span class="text-text-secondary">= Muatan awal (C)</span>
+                                                </div>
+                                                <div class="flex items-start space-x-2">
+                                                    <span class="text-success font-mono">b</span>
+                                                    <span class="text-text-secondary">= Konstanta Cunningham (6.17×10⁻⁶ m·cmHg)</span>
+                                                </div>
+                                                <div class="flex items-start space-x-2">
+                                                    <span class="text-success font-mono">p</span>
+                                                    <span class="text-text-secondary">= Tekanan udara (cmHg)</span>
+                                                </div>
+                                                <div class="flex items-start space-x-2">
+                                                    <span class="text-success font-mono">r</span>
+                                                    <span class="text-text-secondary">= Jari-jari tetes (m)</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="bg-warning-50 border border-warning-200 rounded-lg p-3">
+                                            <p class="text-sm text-text-secondary">
+                                                <strong class="text-warning">Penting:</strong> Koreksi Cunningham diperlukan karena tetes minyak sangat kecil sehingga efek slip molekuler udara menjadi signifikan.
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Formula 4: Electric Field -->
+                            <div class="formula-card bg-surface border border-border rounded-xl overflow-hidden">
+                                <button class="w-full p-5 flex items-center justify-between hover:bg-surface-hover transition-colors" onclick="toggleFormula('formula4')">
+                                    <div class="flex items-center space-x-3">
+                                        <div class="w-10 h-10 bg-warning-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                                            <span class="text-warning font-bold font-heading">4</span>
+                                        </div>
+                                        <div class="text-left">
+                                            <h3 class="font-heading font-semibold text-text-primary">Medan Listrik</h3>
+                                            <p class="text-sm text-text-secondary font-caption">Hubungan tegangan dan jarak pelat kapasitor</p>
+                                        </div>
+                                    </div>
+                                    <svg class="w-5 h-5 text-text-tertiary transition-transform formula-chevron" id="chevron-formula4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                                    </svg>
+                                </button>
+                                
+                                <div class="collapse-content" id="content-formula4">
+                                    <div class="px-5 pb-5 border-t border-border pt-5 space-y-4">
+                                        <div class="bg-white rounded-lg p-4 border border-warning-200">
+                                            <p class="text-center text-lg mb-2">$$E = \frac{V}{d}$$</p>
+                                        </div>
+                                        
+                                        <div class="space-y-2 text-sm">
+                                            <h4 class="font-semibold text-text-primary font-heading">Keterangan Variabel:</h4>
+                                            <div class="grid md:grid-cols-2 gap-3">
+                                                <div class="flex items-start space-x-2">
+                                                    <span class="text-warning font-mono">E</span>
+                                                    <span class="text-text-secondary">= Medan listrik (V/m)</span>
+                                                </div>
+                                                <div class="flex items-start space-x-2">
+                                                    <span class="text-warning font-mono">V</span>
+                                                    <span class="text-text-secondary">= Beda potensial (Volt)</span>
+                                                </div>
+                                                <div class="flex items-start space-x-2">
+                                                    <span class="text-warning font-mono">d</span>
+                                                    <span class="text-text-secondary">= Jarak antar pelat (m)</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="bg-error-50 border border-error-200 rounded-lg p-3">
+                                            <p class="text-sm text-text-secondary">
+                                                <strong class="text-error">Catatan:</strong> Medan listrik seragam dibuat menggunakan dua pelat kapasitor paralel dengan tegangan yang dapat diatur.
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Methodology Section -->
+                <section class="theory-section mb-12 animate-fade-in" id="methodology">
+                    <div class="bg-white rounded-2xl border border-border shadow-md p-6 lg:p-8">
+                        <div class="mb-6">
+                            <h2 class="text-2xl lg:text-3xl font-heading font-bold text-text-primary mb-3">
+                                Metodologi Eksperimen
+                            </h2>
+                            <p class="text-text-secondary leading-relaxed">
+                                Eksperimen Millikan menggunakan dua metode utama untuk menentukan muatan elektron dengan presisi tinggi.
+                            </p>
+                        </div>
+
+                        <div class="grid lg:grid-cols-2 gap-8">
+                            <!-- Floating Method -->
+                            <div class="bg-gradient-to-br from-primary-50 to-white rounded-xl border border-primary-200 p-6">
+                                <div class="flex items-start space-x-3 mb-4">
+                                    <div class="flex-shrink-0 w-12 h-12 bg-primary-100 rounded-xl flex items-center justify-center">
+                                        <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"/>
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <h3 class="text-xl font-heading font-semibold text-primary mb-2">Metode Floating (Melayang)</h3>
+                                        <p class="text-sm text-text-secondary">Tetes minyak dijaga dalam keadaan melayang stabil</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="space-y-3">
+                                    <div class="flex items-start space-x-2">
+                                        <div class="flex-shrink-0 w-6 h-6 bg-primary text-white rounded-full flex items-center justify-center text-xs font-bold mt-0.5">1</div>
+                                        <p class="text-sm text-text-secondary">Tetes minyak disemprotkan ke dalam chamber dan dibiarkan jatuh bebas</p>
+                                    </div>
+                                    <div class="flex items-start space-x-2">
+                                        <div class="flex-shrink-0 w-6 h-6 bg-primary text-white rounded-full flex items-center justify-center text-xs font-bold mt-0.5">2</div>
+                                        <p class="text-sm text-text-secondary">Medan listrik diaktifkan dan tegangan diatur hingga tetes melayang stabil</p>
+                                    </div>
+                                    <div class="flex items-start space-x-2">
+                                        <div class="flex-shrink-0 w-6 h-6 bg-primary text-white rounded-full flex items-center justify-center text-xs font-bold mt-0.5">3</div>
+                                        <p class="text-sm text-text-secondary">Pada kondisi ini: Fe + Fs = Fg, sehingga muatan dapat dihitung</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="mt-4 bg-white rounded-lg p-3 border border-primary-200">
+                                    <p class="text-xs text-text-secondary font-caption">
+                                        <strong class="text-primary">Keuntungan:</strong> Pengukuran stabil dan akurat untuk tetes dengan muatan besar
+                                    </p>
+                                </div>
+                            </div>
+
+                            <!-- Rising/Falling Method -->
+                            <div class="bg-gradient-to-br from-accent-50 to-white rounded-xl border border-accent-200 p-6">
+                                <div class="flex items-start space-x-3 mb-4">
+                                    <div class="flex-shrink-0 w-12 h-12 bg-accent-100 rounded-xl flex items-center justify-center">
+                                        <svg class="w-6 h-6 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 11l5-5m0 0l5 5m-5-5v12"/>
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <h3 class="text-xl font-heading font-semibold text-accent mb-2">Metode Rising/Falling (Naik/Turun)</h3>
+                                        <p class="text-sm text-text-secondary">Mengukur kecepatan naik dan turun tetes minyak</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="space-y-3">
+                                    <div class="flex items-start space-x-2">
+                                        <div class="flex-shrink-0 w-6 h-6 bg-accent text-white rounded-full flex items-center justify-center text-xs font-bold mt-0.5">1</div>
+                                        <p class="text-sm text-text-secondary">Ukur kecepatan jatuh tetes (v₁) tanpa medan listrik</p>
+                                    </div>
+                                    <div class="flex items-start space-x-2">
+                                        <div class="flex-shrink-0 w-6 h-6 bg-accent text-white rounded-full flex items-center justify-center text-xs font-bold mt-0.5">2</div>
+                                        <p class="text-sm text-text-secondary">Aktifkan medan listrik dan ukur kecepatan naik tetes (v₂)</p>
+                                    </div>
+                                    <div class="flex items-start space-x-2">
+                                        <div class="flex-shrink-0 w-6 h-6 bg-accent text-white rounded-full flex items-center justify-center text-xs font-bold mt-0.5">3</div>
+                                        <p class="text-sm text-text-secondary">Hitung muatan dari perbandingan kedua kecepatan terminal</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="mt-4 bg-white rounded-lg p-3 border border-accent-200">
+                                    <p class="text-xs text-text-secondary font-caption">
+                                        <strong class="text-accent">Keuntungan:</strong> Lebih akurat untuk berbagai ukuran tetes dan kondisi muatan
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Visual Comparison -->
+                        <div class="mt-6 bg-surface rounded-xl p-6 border border-border">
+                            <h4 class="font-heading font-semibold text-text-primary mb-4">Perbandingan Metode</h4>
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-sm">
+                                    <thead>
+                                        <tr class="border-b border-border">
+                                            <th class="text-left py-3 px-4 font-heading font-semibold text-text-primary">Aspek</th>
+                                            <th class="text-left py-3 px-4 font-heading font-semibold text-primary">Floating</th>
+                                            <th class="text-left py-3 px-4 font-heading font-semibold text-accent">Rising/Falling</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="text-text-secondary">
+                                        <tr class="border-b border-border">
+                                            <td class="py-3 px-4 font-medium">Kompleksitas</td>
+                                            <td class="py-3 px-4">Sederhana</td>
+                                            <td class="py-3 px-4">Lebih kompleks</td>
+                                        </tr>
+                                        <tr class="border-b border-border">
+                                            <td class="py-3 px-4 font-medium">Akurasi</td>
+                                            <td class="py-3 px-4">Baik untuk muatan besar</td>
+                                            <td class="py-3 px-4">Sangat baik untuk semua muatan</td>
+                                        </tr>
+                                        <tr class="border-b border-border">
+                                            <td class="py-3 px-4 font-medium">Waktu Pengukuran</td>
+                                            <td class="py-3 px-4">Cepat</td>
+                                            <td class="py-3 px-4">Lebih lama</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="py-3 px-4 font-medium">Aplikasi Terbaik</td>
+                                            <td class="py-3 px-4">Demonstrasi konsep</td>
+                                            <td class="py-3 px-4">Penelitian presisi tinggi</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Key Concepts Section -->
+                <section class="theory-section mb-12 animate-fade-in">
+                    <div class="bg-white rounded-2xl border border-border shadow-md p-6 lg:p-8">
+                        <div class="mb-6">
+                            <h2 class="text-2xl lg:text-3xl font-heading font-bold text-text-primary mb-3">
+                                Konsep Kunci
+                            </h2>
+                            <p class="text-text-secondary leading-relaxed">
+                                Pemahaman konsep-konsep berikut sangat penting untuk keberhasilan eksperimen.
+                            </p>
+                        </div>
+
+                        <div class="grid md:grid-cols-2 gap-8">
+                            <!-- Concept 1 -->
+                            <div class="bg-gradient-to-br from-primary-50 to-white rounded-xl border border-primary-200 p-5">
+                                <div class="flex items-start space-x-3">
+                                    <div class="flex-shrink-0 w-10 h-10 bg-primary-100 rounded-lg flex items-center justify-center">
+                                        <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <h3 class="font-heading font-semibold text-primary mb-2">Kuantisasi Muatan</h3>
+                                        <p class="text-sm text-text-secondary leading-relaxed">
+                                            Muatan listrik selalu muncul dalam kelipatan bulat dari muatan elektron fundamental (e = 1.602 × 10⁻¹⁹ C). Tidak ada muatan yang lebih kecil dari e dalam kondisi normal.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Concept 2 -->
+                            <div class="bg-gradient-to-br from-accent-50 to-white rounded-xl border border-accent-200 p-5">
+                                <div class="flex items-start space-x-3">
+                                    <div class="flex-shrink-0 w-10 h-10 bg-accent-100 rounded-lg flex items-center justify-center">
+                                        <svg class="w-5 h-5 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <h3 class="font-heading font-semibold text-accent mb-2">Kecepatan Terminal</h3>
+                                        <p class="text-sm text-text-secondary leading-relaxed">
+                                            Kecepatan konstan yang dicapai tetes ketika gaya gravitasi seimbang dengan gaya hambat Stokes. Pada kecepatan ini, percepatan tetes menjadi nol.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Concept 3 -->
+                            <div class="bg-gradient-to-br from-success-50 to-white rounded-xl border border-success-200 p-5">
+                                <div class="flex items-start space-x-3">
+                                    <div class="flex-shrink-0 w-10 h-10 bg-success-100 rounded-lg flex items-center justify-center">
+                                        <svg class="w-5 h-5 text-success" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <h3 class="font-heading font-semibold text-success mb-2">Viskositas Udara</h3>
+                                        <p class="text-sm text-text-secondary leading-relaxed">
+                                            Hambatan internal fluida (udara) terhadap aliran. Viskositas udara sangat kecil tetapi signifikan untuk partikel mikro seperti tetes minyak Millikan.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Concept 4 -->
+                            <div class="bg-gradient-to-br from-warning-50 to-white rounded-xl border border-warning-200 p-5">
+                                <div class="flex items-start space-x-3">
+                                    <div class="flex-shrink-0 w-10 h-10 bg-warning-100 rounded-lg flex items-center justify-center">
+                                        <svg class="w-5 h-5 text-warning" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"/>
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <h3 class="font-heading font-semibold text-warning mb-2">Medan Listrik Seragam</h3>
+                                        <p class="text-sm text-text-secondary leading-relaxed">
+                                            Medan listrik dengan kuat dan arah yang sama di setiap titik. Dibuat menggunakan dua pelat konduktor paralel dengan beda potensial konstan.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Historical Context -->
+                <section class="theory-section mb-12 animate-fade-in">
+                    <div class="bg-white rounded-2xl border border-border shadow-md p-6 lg:p-8">
+                        <div class="flex items-start space-x-4 mb-6">
+                            <div class="flex-shrink-0 w-14 h-14 bg-primary-100 rounded-xl flex items-center justify-center">
+                                <svg class="w-7 h-7 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <h2 class="text-2xl lg:text-3xl font-heading font-bold text-text-primary mb-3">
+                                    Konteks Historis
+                                </h2>
+                                <p class="text-text-secondary leading-relaxed">
+                                    Eksperimen Millikan merupakan tonggak penting dalam sejarah fisika modern yang mengubah pemahaman kita tentang struktur atom.
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="grid md:grid-cols-3 gap-8">
+                            <div class="bg-surface rounded-xl p-5 border border-border">
+                                <div class="text-3xl font-bold font-heading text-text-primary mb-2">1909</div>
+                                <p class="text-sm text-text-secondary">
+                                    Robert A. Millikan melakukan eksperimen pertama di University of Chicago
+                                </p>
+                            </div>
+                            
+                            <div class="bg-surface rounded-xl p-5 border border-border">
+                                <div class="text-3xl font-bold font-heading text-text-primary mb-2">1923</div>
+                                <p class="text-sm text-text-secondary">
+                                    Millikan menerima Hadiah Nobel Fisika atas kontribusinya pada fisika eksperimental
+                                </p>
+                            </div>
+                            
+                            <div class="bg-surface rounded-xl p-5 border border-border">
+                                <div class="text-3xl font-bold font-heading text-text-primary mb-2">±1%</div>
+                                <p class="text-sm text-text-secondary">
+                                    Akurasi hasil Millikan dibandingkan dengan nilai modern muatan elektron
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </main>
+
+    <!-- Navigation Footer -->
+    <footer class="bg-white border-t border-border py-6 no-print sticky bottom-0 z-40 shadow-lg">
+        <div class="container-custom">
+            <div class="flex items-center justify-between">
+                <a href="preliminary.html" class="btn btn-outline rounded-lg px-6 py-3 inline-flex items-center space-x-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+                    </svg>
+                    <span>Kembali ke Pendahuluan</span>
+                </a>
+                
+                <div class="hidden md:flex items-center space-x-3 text-sm text-text-secondary">
+                    <svg class="w-5 h-5 text-success" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                    </svg>
+                    <span class="font-caption">Teori dasar telah dipelajari</span>
+                </div>
+                
+                <a href="index.html#stage-2" class="btn btn-primary rounded-lg px-6 py-3 inline-flex items-center space-x-2 shadow-md hover:shadow-lg">
+                    <span>Lanjut ke Simulasi</span>
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                    </svg>
+                </a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Formula collapse toggle functionality
+        function toggleFormula(formulaId) {
+            const content = document.getElementById(`content-${formulaId}`);
+            const chevron = document.getElementById(`chevron-${formulaId}`);
+            const card = content.closest('.formula-card');
+            
+            // Toggle expanded class
+            content.classList.toggle('expanded');
+            card.classList.toggle('expanded');
+            
+            // Rotate chevron
+            if (content.classList.contains('expanded')) {
+                chevron.style.transform = 'rotate(180deg)';
+            } else {
+                chevron.style.transform = 'rotate(0deg)';
+            }
+        }
+
+        // Smooth scroll for internal links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Add animation on scroll
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+
+        // Observe all theory sections
+        document.querySelectorAll('.theory-section').forEach(section => {
+            section.style.opacity = '0';
+            section.style.transform = 'translateY(20px)';
+            section.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+            observer.observe(section);
+        });
+
+        // Print functionality
+        window.addEventListener('beforeprint', () => {
+            // Expand all formulas before printing
+            document.querySelectorAll('.collapse-content').forEach(content => {
+                content.classList.add('expanded');
+            });
+        });
+
+        window.addEventListener('afterprint', () => {
+            // Collapse formulas after printing
+            document.querySelectorAll('.collapse-content').forEach(content => {
+                content.classList.remove('expanded');
+            });
+        });
+
+        // Track progress
+        window.addEventListener('load', () => {
+            // Save progress to localStorage
+            const progress = {
+                stage: 1,
+                completed: true,
+                timestamp: new Date().toISOString()
+            };
+            localStorage.setItem('millikan_stage1_progress', JSON.stringify(progress));
+        });
+
+        // MathJax rendering check
+        window.addEventListener('load', () => {
+            if (typeof MathJax !== 'undefined') {
+                MathJax.typesetPromise().catch((err) => console.log('MathJax error:', err));
+            }
+        });
+    </script>
+    <script id="dhws-dataInjector" src="../../../public/dhws-data-injector.js"></script>
+</body>
+</html>

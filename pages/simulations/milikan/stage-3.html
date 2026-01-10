@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Analisis Data Eksperimen Tetes Minyak Millikan - Tahap 3: Tabel observasi, grafik otomatis, dan ekspor laporan akademik PDF">
+    <title>Tahap 3: Analisis Data - Eksperimen Millikan | FisikaSeru</title>
+    <link rel="stylesheet" href="../../../css/main.css">
+    <script defer src="/public/js/auth.js"></script>
+    
+    <!-- Chart.js for data visualization -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    
+    <!-- jsPDF for PDF generation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    
+    <style>
+        /* Custom styles for data tables */
+        .data-table {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+        
+        .data-table table {
+            min-width: 800px;
+        }
+        
+        .data-table th {
+            position: sticky;
+            top: 0;
+            background: #F8FAFC;
+            z-index: 10;
+        }
+        
+        /* Chart container responsive */
+        .chart-container {
+            position: relative;
+            height: 400px;
+            width: 100%;
+        }
+        
+        @media (max-width: 768px) {
+            .chart-container {
+                height: 300px;
+            }
+        }
+        
+        /* Empty state styling */
+        .empty-state {
+            min-height: 300px;
+        }
+        
+        /* Print optimization */
+        @media print {
+            .no-print {
+                display: none !important;
+            }
+            
+            .print-break {
+                page-break-after: always;
+            }
+        }
+        
+        /* Table row hover effect */
+        .data-row:hover {
+            background-color: #F1F5F9;
+        }
+        
+        /* Sortable column indicator */
+        .sortable-header {
+            cursor: pointer;
+            user-select: none;
+        }
+        
+        .sortable-header:hover {
+            background-color: #E2E8F0;
+        }
+        
+        /* Analysis textarea styling */
+        .analysis-textarea {
+            min-height: 150px;
+            resize: vertical;
+        }
+        
+        /* Progress indicator */
+        .stage-progress {
+            position: relative;
+        }
+        
+        .stage-progress::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(to right, #3B82F6 0%, #3B82F6 100%);
+        }
+        
+        /* Export button animation */
+        @keyframes pulse-export {
+            0%, 100% {
+                box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.7);
+            }
+            50% {
+                box-shadow: 0 0 0 10px rgba(59, 130, 246, 0);
+            }
+        }
+        
+        .export-ready {
+            animation: pulse-export 2s infinite;
+        }
+
+        /* Embedded inside milikan/index.html iframe: hide duplicated top UI */
+        html.embedded body [data-embed-hide="true"] {
+            display: none !important;
+        }
+    </style>
+  <script type="module" async src="https://static.rocket.new/rocket-web.js?_cfg=https%3A%2F%2Ffisikaseru8923back.builtwithrocket.new&_be=https%3A%2F%2Fapplication.rocket.new&_v=0.1.12"></script>
+  <script type="module" defer src="https://static.rocket.new/rocket-shot.js?v=0.0.2"></script>
+  </head>
+<body class="bg-background">
+    <!-- Navigation Header -->
+    <nav data-embed-hide="true" class="bg-white border-b border-border sticky top-0 z-50 shadow-sm no-print">
+        <div class="container-custom">
+            <div class="flex items-center justify-between h-16">
+                <!-- Logo & Lab Title -->
+                <div class="flex items-center space-x-4">
+                    <a href="../../landing_page.html" class="flex items-center space-x-3">
+                        <svg class="w-10 h-10" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="20" cy="20" r="18" fill="#3B82F6" opacity="0.1"/>
+                            <path d="M20 8C13.373 8 8 13.373 8 20C8 26.627 13.373 32 20 32C26.627 32 32 26.627 32 20C32 13.373 26.627 8 20 8ZM20 10C25.514 10 30 14.486 30 20C30 25.514 25.514 30 20 30C14.486 30 10 25.514 10 20C10 14.486 14.486 10 20 10Z" fill="#3B82F6"/>
+                            <circle cx="20" cy="20" r="4" fill="#06B6D4"/>
+                        </svg>
+                        <div>
+                            <h1 class="text-lg font-heading font-semibold text-primary">FisikaSeru</h1>
+                            <p class="text-xs text-text-secondary font-caption">Eksperimen Millikan</p>
+                        </div>
+                    </a>
+                    
+                    <div class="hidden md:block h-8 w-px bg-border"></div>
+                    
+                    <div class="hidden md:block">
+                        <h2 class="text-sm font-medium text-text-primary font-heading">Tahap 3: Analisis Data</h2>
+                        <p class="text-xs text-text-secondary font-caption">Observasi & Pelaporan</p>
+                    </div>
+                </div>
+                
+                <!-- Stage Progress Indicator -->
+                <div class="hidden lg:flex items-center space-x-2">
+                    <div class="flex items-center space-x-2 px-3 py-1.5 bg-success-50 rounded-lg border border-success-200">
+                        <svg class="w-4 h-4 text-success" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                        </svg>
+                        <span class="text-xs font-medium text-success font-caption">Tahap 1</span>
+                    </div>
+                    <svg class="w-4 h-4 text-border" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                    </svg>
+                    <div class="flex items-center space-x-2 px-3 py-1.5 bg-success-50 rounded-lg border border-success-200">
+                        <svg class="w-4 h-4 text-success" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                        </svg>
+                        <span class="text-xs font-medium text-success font-caption">Tahap 2</span>
+                    </div>
+                    <svg class="w-4 h-4 text-border" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                    </svg>
+                    <div class="flex items-center space-x-2 px-3 py-1.5 bg-primary-50 rounded-lg border border-primary-200 stage-progress">
+                        <svg class="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                        </svg>
+                        <span class="text-xs font-medium text-primary font-caption">Tahap 3</span>
+                    </div>
+                </div>
+                
+                <!-- Action Buttons -->
+                <div class="flex items-center space-x-3">
+                    <button id="saveProgressBtn" class="hidden md:inline-flex items-center space-x-2 px-4 py-2 text-sm font-medium text-text-secondary hover:text-primary transition-colors">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"/>
+                        </svg>
+                        <span class="font-caption">Simpan</span>
+                    </button>
+                    
+                    <a href="index.html#stage-2" class="btn btn-outline rounded-lg px-4 py-2">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+                        </svg>
+                        Kembali
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="container-custom py-8">
+        <!-- Page Header -->
+        <div class="mb-8">
+            <div class="flex items-start justify-between mb-4">
+                <div>
+                    <h1 class="text-3xl font-heading font-bold text-text-primary mb-2">Analisis Data Eksperimen</h1>
+                    <p class="text-text-secondary">Tinjau hasil pengukuran, analisis grafik, dan buat kesimpulan ilmiah</p>
+                </div>
+                
+                <button id="exportPdfBtn" class="btn btn-primary rounded-lg px-6 py-3 shadow-md hover:shadow-lg export-ready">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                    </svg>
+                    Ekspor Laporan PDF
+                </button>
+            </div>
+            
+            <!-- Info Alert -->
+            <div class="alert alert-info">
+                <div class="flex items-start space-x-3">
+                    <svg class="w-5 h-5 text-primary flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+                    </svg>
+                    <div class="flex-1">
+                        <p class="text-sm font-medium text-primary-dark">Data dari Tahap 2 dimuat dari penyimpanan lokal</p>
+                        <p class="text-sm text-primary-dark/80 mt-1">Data obtained from a physics-based simulation model. Ini simulasi pembelajaran, bukan pengukuran laboratorium nyata.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Data Summary Cards -->
+        <div class="grid md:grid-cols-4 gap-8 mb-8">
+            <div class="card card-hover">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-sm font-medium text-text-secondary font-caption">Total Percobaan</span>
+                    <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                    </svg>
+                </div>
+                <p class="text-3xl font-bold text-text-primary font-heading" id="totalTrials">8</p>
+                <p class="text-xs text-text-tertiary mt-1 font-caption">Pengukuran valid</p>
+            </div>
+            
+            <div class="card card-hover">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-sm font-medium text-text-secondary font-caption">Muatan Rata-rata</span>
+                    <svg class="w-5 h-5 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                    </svg>
+                </div>
+                <p class="text-3xl font-bold text-text-primary font-heading" id="avgCharge">1.62</p>
+                <p class="text-xs text-text-tertiary mt-1 font-caption">× 10⁻¹⁹ C</p>
+            </div>
+            
+            <div class="card card-hover">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-sm font-medium text-text-secondary font-caption">Deviasi Standar</span>
+                    <svg class="w-5 h-5 text-warning" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                    </svg>
+                </div>
+                <p class="text-3xl font-bold text-text-primary font-heading" id="stdDev">0.08</p>
+                <p class="text-xs text-text-tertiary mt-1 font-caption">× 10⁻¹⁹ C</p>
+            </div>
+            
+            <div class="card card-hover">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-sm font-medium text-text-secondary font-caption">Akurasi</span>
+                    <svg class="w-5 h-5 text-success" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                </div>
+                <p class="text-3xl font-bold text-text-primary font-heading" id="accuracy">98.8</p>
+                <p class="text-xs text-text-tertiary mt-1 font-caption">% dari nilai teoritis</p>
+            </div>
+        </div>
+
+        <!-- Observation Data Table -->
+        <section class="mb-8">
+            <div class="card">
+                <div class="flex items-center justify-between mb-6">
+                    <div>
+                        <h2 class="text-xl font-heading font-semibold text-text-primary mb-1">Tabel Observasi</h2>
+                        <p class="text-sm text-text-secondary font-caption">Data pengukuran dari simulasi eksperimen</p>
+                    </div>
+                    
+                    <div class="flex items-center space-x-2">
+                        <button id="addTrialBtn" class="btn btn-outline rounded-lg px-4 py-2 text-sm">
+                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                            </svg>
+                            Tambah Data
+                        </button>
+                        
+                        <button id="exportTableBtn" class="btn btn-ghost rounded-lg px-4 py-2 text-sm">
+                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                            </svg>
+                            Ekspor CSV
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Table Container -->
+                <div class="data-table rounded-lg border border-border overflow-hidden">
+                    <table class="w-full">
+                        <thead class="bg-surface border-b border-border">
+                            <tr>
+                                <th class="sortable-header px-4 py-3 text-left text-xs font-semibold text-text-primary uppercase tracking-wider font-heading" data-sort="trial">
+                                    <div class="flex items-center space-x-1">
+                                        <span>No.</span>
+                                        <svg class="w-4 h-4 text-text-tertiary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"/>
+                                        </svg>
+                                    </div>
+                                </th>
+                                <th class="sortable-header px-4 py-3 text-left text-xs font-semibold text-text-primary uppercase tracking-wider font-heading" data-sort="voltage">
+                                    <div class="flex items-center space-x-1">
+                                        <span>Tegangan (V)</span>
+                                        <svg class="w-4 h-4 text-text-tertiary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"/>
+                                        </svg>
+                                    </div>
+                                </th>
+                                <th class="sortable-header px-4 py-3 text-left text-xs font-semibold text-text-primary uppercase tracking-wider font-heading" data-sort="radius">
+                                    <div class="flex items-center space-x-1">
+                                        <span>Radius (μm)</span>
+                                        <svg class="w-4 h-4 text-text-tertiary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"/>
+                                        </svg>
+                                    </div>
+                                </th>
+                                <th class="sortable-header px-4 py-3 text-left text-xs font-semibold text-text-primary uppercase tracking-wider font-heading" data-sort="v1">
+                                    <div class="flex items-center space-x-1">
+                                        <span>v₁ (mm/s)</span>
+                                        <svg class="w-4 h-4 text-text-tertiary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"/>
+                                        </svg>
+                                    </div>
+                                </th>
+                                <th class="sortable-header px-4 py-3 text-left text-xs font-semibold text-text-primary uppercase tracking-wider font-heading" data-sort="v2">
+                                    <div class="flex items-center space-x-1">
+                                        <span>v₂ (mm/s)</span>
+                                        <svg class="w-4 h-4 text-text-tertiary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"/>
+                                        </svg>
+                                    </div>
+                                </th>
+                                <th class="sortable-header px-4 py-3 text-left text-xs font-semibold text-text-primary uppercase tracking-wider font-heading" data-sort="charge">
+                                    <div class="flex items-center space-x-1">
+                                        <span>Muatan q (×10⁻¹⁹ C)</span>
+                                        <svg class="w-4 h-4 text-text-tertiary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"/>
+                                        </svg>
+                                    </div>
+                                </th>
+                                <th class="sortable-header px-4 py-3 text-left text-xs font-semibold text-text-primary uppercase tracking-wider font-heading" data-sort="corrected">
+                                    <div class="flex items-center space-x-1">
+                                        <span>Koreksi qc (×10⁻¹⁹ C)</span>
+                                        <svg class="w-4 h-4 text-text-tertiary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"/>
+                                        </svg>
+                                    </div>
+                                </th>
+                                <th class="px-4 py-3 text-left text-xs font-semibold text-text-primary uppercase tracking-wider font-heading">
+                                    Aksi
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody id="dataTableBody" class="bg-white divide-y divide-border">
+                            <!-- Data rows will be populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- Empty State -->
+                <div id="emptyState" class="hidden empty-state">
+                    <svg class="w-16 h-16 text-text-tertiary mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                    </svg>
+                    <h3 class="text-lg font-heading font-semibold text-text-primary mb-2">Belum Ada Data Pengukuran</h3>
+                    <p class="text-sm text-text-secondary text-center max-w-md mb-4">
+                        Lakukan eksperimen di Tahap 2 untuk mengumpulkan data pengukuran, atau tambahkan data manual untuk analisis.
+                    </p>
+                    <button class="btn btn-primary rounded-lg px-6 py-2">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                        </svg>
+                        Tambah Data Manual
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Data Visualization Section -->
+        <section class="mb-8">
+            <div class="grid lg:grid-cols-2 gap-8">
+                <!-- Charge Distribution Chart -->
+                <div class="card">
+                    <div class="mb-6">
+                        <h3 class="text-lg font-heading font-semibold text-text-primary mb-1">Distribusi Muatan Elektron</h3>
+                        <p class="text-sm text-text-secondary font-caption">Histogram frekuensi nilai muatan terukur</p>
+                    </div>
+                    
+                    <div class="chart-container">
+                        <canvas id="chargeDistributionChart"></canvas>
+                    </div>
+                    
+                    <div class="mt-4 pt-4 border-t border-border">
+                        <div class="flex items-center justify-between text-sm">
+                            <span class="text-text-secondary font-caption">Nilai teoritis e:</span>
+                            <span class="font-medium text-text-primary font-mono">1.602 × 10⁻¹⁹ C</span>
+                        </div>
+                        <div class="flex items-center justify-between text-sm mt-2">
+                            <span class="text-text-secondary font-caption">Nilai eksperimen rata-rata:</span>
+                            <span class="font-medium text-primary font-mono" id="expAvgCharge">1.620 × 10⁻¹⁹ C</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Velocity Relationship Chart -->
+                <div class="card">
+                    <div class="mb-6">
+                        <h3 class="text-lg font-heading font-semibold text-text-primary mb-1">Hubungan Kecepatan v₁ dan v₂</h3>
+                        <p class="text-sm text-text-secondary font-caption">Scatter plot kecepatan naik vs turun</p>
+                    </div>
+                    
+                    <div class="chart-container">
+                        <canvas id="velocityRelationChart"></canvas>
+                    </div>
+                    
+                    <div class="mt-4 pt-4 border-t border-border">
+                        <div class="flex items-center justify-between text-sm">
+                            <span class="text-text-secondary font-caption">Korelasi:</span>
+                            <span class="font-medium text-text-primary font-mono" id="correlation">r = 0.94</span>
+                        </div>
+                        <div class="flex items-center justify-between text-sm mt-2">
+                            <span class="text-text-secondary font-caption">Tren:</span>
+                            <span class="font-medium text-success font-caption">Linear positif</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Charge vs Trial Chart -->
+                <div class="card">
+                    <div class="mb-6">
+                        <h3 class="text-lg font-heading font-semibold text-text-primary mb-1">Muatan per Percobaan</h3>
+                        <p class="text-sm text-text-secondary font-caption">Grafik garis nilai muatan terkoreksi</p>
+                    </div>
+                    
+                    <div class="chart-container">
+                        <canvas id="chargeTrialChart"></canvas>
+                    </div>
+                    
+                    <div class="mt-4 pt-4 border-t border-border">
+                        <div class="flex items-center justify-between text-sm">
+                            <span class="text-text-secondary font-caption">Range muatan:</span>
+                            <span class="font-medium text-text-primary font-mono" id="chargeRange">1.54 - 1.70 × 10⁻¹⁹ C</span>
+                        </div>
+                        <div class="flex items-center justify-between text-sm mt-2">
+                            <span class="text-text-secondary font-caption">Konsistensi:</span>
+                            <span class="font-medium text-success font-caption">Sangat baik (σ < 5%)</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Statistical Analysis Chart -->
+                <div class="card">
+                    <div class="mb-6">
+                        <h3 class="text-lg font-heading font-semibold text-text-primary mb-1">Analisis Statistik</h3>
+                        <p class="text-sm text-text-secondary font-caption">Box plot distribusi data muatan</p>
+                    </div>
+                    
+                    <div class="chart-container">
+                        <canvas id="statisticalChart"></canvas>
+                    </div>
+                    
+                    <div class="mt-4 pt-4 border-t border-border grid grid-cols-2 gap-4 text-sm">
+                        <div>
+                            <span class="text-text-secondary font-caption block mb-1">Q1 (Kuartil 1):</span>
+                            <span class="font-medium text-text-primary font-mono">1.58 × 10⁻¹⁹ C</span>
+                        </div>
+                        <div>
+                            <span class="text-text-secondary font-caption block mb-1">Q3 (Kuartil 3):</span>
+                            <span class="font-medium text-text-primary font-mono">1.66 × 10⁻¹⁹ C</span>
+                        </div>
+                        <div>
+                            <span class="text-text-secondary font-caption block mb-1">Median:</span>
+                            <span class="font-medium text-text-primary font-mono">1.62 × 10⁻¹⁹ C</span>
+                        </div>
+                        <div>
+                            <span class="text-text-secondary font-caption block mb-1">IQR:</span>
+                            <span class="font-medium text-text-primary font-mono">0.08 × 10⁻¹⁹ C</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Student Analysis Section -->
+        <section class="mb-8">
+            <div class="card">
+                <div class="mb-6">
+                    <h2 class="text-xl font-heading font-semibold text-text-primary mb-1">Analisis Mahasiswa</h2>
+                    <p class="text-sm text-text-secondary font-caption">Lengkapi analisis berikut untuk laporan akademik Anda</p>
+                </div>
+                
+                <div class="space-y-6">
+                    <!-- Methodology Evaluation -->
+                    <div>
+                        <label class="label">
+                            <span class="flex items-center space-x-2">
+                                <span>1. Evaluasi Metodologi</span>
+                                <span class="text-error">*</span>
+                            </span>
+                        </label>
+                        <p class="text-xs text-text-secondary mb-2 font-caption">
+                            Jelaskan kelebihan dan keterbatasan metode Millikan yang Anda gunakan dalam eksperimen ini.
+                        </p>
+                        <textarea 
+                            id="methodologyAnalysis" 
+                            class="input analysis-textarea" 
+                            placeholder="Contoh: Metode floating drop yang digunakan memiliki kelebihan dalam hal stabilitas pengukuran karena tetes minyak dapat dipertahankan dalam posisi diam. Namun, keterbatasan metode ini adalah..."
+                        ></textarea>
+                        <div class="flex items-center justify-between mt-2">
+                            <span class="text-xs text-text-tertiary font-caption" id="methodologyCount">0 / 500 karakter minimum</span>
+                            <span class="text-xs text-text-tertiary font-caption">Disarankan: 500-1000 karakter</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Results Interpretation -->
+                    <div>
+                        <label class="label">
+                            <span class="flex items-center space-x-2">
+                                <span>2. Interpretasi Hasil</span>
+                                <span class="text-error">*</span>
+                            </span>
+                        </label>
+                        <p class="text-xs text-text-secondary mb-2 font-caption">
+                            Analisis hasil pengukuran Anda. Bandingkan dengan nilai teoritis dan jelaskan penyebab deviasi jika ada.
+                        </p>
+                        <textarea 
+                            id="resultsInterpretation" 
+                            class="input analysis-textarea" 
+                            placeholder="Contoh: Dari 8 percobaan yang dilakukan, diperoleh nilai rata-rata muatan elektron sebesar 1.620 × 10⁻¹⁹ C dengan deviasi standar 0.08 × 10⁻¹⁹ C. Nilai ini memiliki akurasi 98.8% terhadap nilai teoritis..."
+                        ></textarea>
+                        <div class="flex items-center justify-between mt-2">
+                            <span class="text-xs text-text-tertiary font-caption" id="resultsCount">0 / 500 karakter minimum</span>
+                            <span class="text-xs text-text-tertiary font-caption">Disarankan: 500-1000 karakter</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Hypothesis Validation -->
+                    <div>
+                        <label class="label">
+                            <span class="flex items-center space-x-2">
+                                <span>3. Validasi Hipotesis</span>
+                                <span class="text-error">*</span>
+                            </span>
+                        </label>
+                        <p class="text-xs text-text-secondary mb-2 font-caption">
+                            Apakah hipotesis awal Anda terbukti? Jelaskan dengan merujuk pada data eksperimen.
+                        </p>
+                        <textarea 
+                            id="hypothesisValidation" 
+                            class="input analysis-textarea" 
+                            placeholder="Contoh: Hipotesis bahwa muatan elektron bersifat diskrit dan memiliki nilai fundamental terbukti dari hasil eksperimen. Data menunjukkan bahwa semua nilai muatan terukur merupakan kelipatan bulat dari..."
+                        ></textarea>
+                        <div class="flex items-center justify-between mt-2">
+                            <span class="text-xs text-text-tertiary font-caption" id="hypothesisCount">0 / 300 karakter minimum</span>
+                            <span class="text-xs text-text-tertiary font-caption">Disarankan: 300-600 karakter</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Error Analysis -->
+                    <div>
+                        <label class="label">
+                            <span class="flex items-center space-x-2">
+                                <span>4. Analisis Kesalahan</span>
+                                <span class="text-error">*</span>
+                            </span>
+                        </label>
+                        <p class="text-xs text-text-secondary mb-2 font-caption">
+                            Identifikasi sumber kesalahan dalam eksperimen dan dampaknya terhadap hasil pengukuran.
+                        </p>
+                        <textarea 
+                            id="errorAnalysis" 
+                            class="input analysis-textarea" 
+                            placeholder="Contoh: Kesalahan sistematis dapat berasal dari ketidakpastian pengukuran tegangan dan jarak pelat. Kesalahan acak muncul dari fluktuasi gerakan tetes minyak akibat konveksi udara..."
+                        ></textarea>
+                        <div class="flex items-center justify-between mt-2">
+                            <span class="text-xs text-text-tertiary font-caption" id="errorCount">0 / 400 karakter minimum</span>
+                            <span class="text-xs text-text-tertiary font-caption">Disarankan: 400-800 karakter</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Conclusions -->
+                    <div>
+                        <label class="label">
+                            <span class="flex items-center space-x-2">
+                                <span>5. Kesimpulan</span>
+                                <span class="text-error">*</span>
+                            </span>
+                        </label>
+                        <p class="text-xs text-text-secondary mb-2 font-caption">
+                            Ringkas temuan utama eksperimen dan implikasinya terhadap pemahaman fisika modern.
+                        </p>
+                        <textarea 
+                            id="conclusions" 
+                            class="input analysis-textarea" 
+                            placeholder="Contoh: Eksperimen Tetes Minyak Millikan berhasil membuktikan bahwa muatan elektron memiliki nilai fundamental sebesar 1.602 × 10⁻¹⁹ C. Hasil ini mendukung teori kuantisasi muatan dan menjadi dasar..."
+                        ></textarea>
+                        <div class="flex items-center justify-between mt-2">
+                            <span class="text-xs text-text-tertiary font-caption" id="conclusionsCount">0 / 300 karakter minimum</span>
+                            <span class="text-xs text-text-tertiary font-caption">Disarankan: 300-600 karakter</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Save Analysis Button -->
+                <div class="mt-6 pt-6 border-t border-border flex items-center justify-between">
+                    <div class="flex items-center space-x-2 text-sm">
+                        <svg class="w-5 h-5 text-text-tertiary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                        <span class="text-text-secondary font-caption">Analisis akan disimpan otomatis setiap 30 detik</span>
+                    </div>
+                    
+                    <button id="saveAnalysisBtn" class="btn btn-primary rounded-lg px-6 py-2">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                        </svg>
+                        Simpan Analisis
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Action Buttons -->
+        <div class="flex flex-col sm:flex-row items-center justify-between gap-4 pt-8 border-t border-border">
+            <a href="index.html#stage-2" class="btn btn-outline rounded-lg px-6 py-3 w-full sm:w-auto">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+                </svg>
+                Kembali ke Simulasi
+            </a>
+            
+            <div class="flex items-center space-x-3 w-full sm:w-auto">
+                <button id="previewReportBtn" class="btn btn-outline rounded-lg px-6 py-3 flex-1 sm:flex-initial">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                    </svg>
+                    Pratinjau
+                </button>
+                
+                <button id="finalExportBtn" class="btn btn-primary rounded-lg px-6 py-3 flex-1 sm:flex-initial shadow-lg hover:shadow-xl">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                    </svg>
+                    Ekspor Laporan PDF
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-text-primary text-white py-8 mt-16 no-print">
+        <div class="container-custom">
+            <div class="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
+                <div class="flex items-center space-x-3">
+                    <svg class="w-8 h-8" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="20" cy="20" r="18" fill="white" opacity="0.1"/>
+                        <path d="M20 8C13.373 8 8 13.373 8 20C8 26.627 13.373 32 20 32C26.627 32 32 26.627 32 20C32 13.373 26.627 8 20 8ZM20 10C25.514 10 30 14.486 30 20C30 25.514 25.514 30 20 30C14.486 30 10 25.514 10 20C10 14.486 14.486 10 20 10Z" fill="white"/>
+                        <circle cx="20" cy="20" r="4" fill="#06B6D4"/>
+                    </svg>
+                    <div>
+                        <h3 class="text-sm font-heading font-semibold">FisikaSeru</h3>
+                        <p class="text-xs text-white/70 font-caption">Laboratorium Virtual</p>
+                    </div>
+                </div>
+                
+                <div class="text-center md:text-right">
+                    <p class="text-sm text-white/70 font-caption">© 2025 FisikaSeru. Hak Cipta Dilindungi.</p>
+                    <p class="text-xs text-white/50 mt-1 font-caption">Platform Pendidikan Fisika Interaktif</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Add Trial Modal -->
+    <div id="addTrialModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <div class="sticky top-0 bg-white border-b border-border px-6 py-4 flex items-center justify-between">
+                <div>
+                    <h3 class="text-xl font-heading font-semibold text-text-primary">Tambah Data Percobaan</h3>
+                    <p class="text-sm text-text-secondary font-caption">Masukkan data pengukuran manual</p>
+                </div>
+                <button id="closeModalBtn" class="p-2 hover:bg-surface rounded-lg transition-colors">
+                    <svg class="w-6 h-6 text-text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
+            </div>
+            
+            <div class="p-6 space-y-4">
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="label">Tegangan (V)</label>
+                        <input type="number" id="modalVoltage" class="input" placeholder="500" step="0.1">
+                    </div>
+                    <div>
+                        <label class="label">Radius Tetes (μm)</label>
+                        <input type="number" id="modalRadius" class="input" placeholder="2.5" step="0.01">
+                    </div>
+                    <div>
+                        <label class="label">Kecepatan v₁ (mm/s)</label>
+                        <input type="number" id="modalV1" class="input" placeholder="0.15" step="0.001">
+                    </div>
+                    <div>
+                        <label class="label">Kecepatan v₂ (mm/s)</label>
+                        <input type="number" id="modalV2" class="input" placeholder="0.12" step="0.001">
+                    </div>
+                </div>
+                
+                <div class="alert alert-info">
+                    <div class="flex items-start space-x-3">
+                        <svg class="w-5 h-5 text-primary flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+                        </svg>
+                        <p class="text-sm text-primary-dark">Nilai muatan dan koreksi Cunningham akan dihitung otomatis berdasarkan data yang Anda masukkan.</p>
+                    </div>
+                </div>
+                
+                <div class="flex items-center justify-end space-x-3 pt-4">
+                    <button id="cancelModalBtn" class="btn btn-outline rounded-lg px-6 py-2">Batal</button>
+                    <button id="submitTrialBtn" class="btn btn-primary rounded-lg px-6 py-2">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                        </svg>
+                        Tambah Data
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="./js/main.js"></script>
+<script id="dhws-dataInjector" src="../../../public/dhws-data-injector.js"></script>
+</body>
+</html>

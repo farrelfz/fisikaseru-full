@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Pre-test pendaftaran eksperimen Tetes Minyak Millikan" />
+  <title>Millikan — Preliminary</title>
+  <link rel="stylesheet" href="/css/main.css" />
+  <script defer src="/public/dhws-data-injector.js"></script>
+  <script defer src="/public/js/auth.js"></script>
+
+  <style>
+    @keyframes modalFadeIn {
+      from { opacity: 0; transform: scale(0.98); }
+      to { opacity: 1; transform: scale(1); }
+    }
+    @keyframes backdropFadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    .modal-backdrop { animation: backdropFadeIn 220ms ease-out; }
+    .modal-content { animation: modalFadeIn 220ms ease-out; }
+    .progress-bar { transition: width 350ms cubic-bezier(0.25, 0.46, 0.45, 0.94); }
+    .field-valid { border-color: rgb(var(--color-success) / var(--tw-border-opacity, 1)); }
+    .field-invalid { border-color: rgb(var(--color-error) / var(--tw-border-opacity, 1)); }
+
+    .custom-checkbox {
+      appearance: none;
+      width: 20px;
+      height: 20px;
+      border: 2px solid rgb(var(--color-border) / 1);
+      border-radius: 6px;
+      cursor: pointer;
+      position: relative;
+    }
+    .custom-checkbox:checked {
+      background-color: rgb(var(--color-primary) / 1);
+      border-color: rgb(var(--color-primary) / 1);
+    }
+    .custom-checkbox:checked::after {
+      content: '';
+      position: absolute;
+      left: 6px;
+      top: 2px;
+      width: 5px;
+      height: 10px;
+      border: solid white;
+      border-width: 0 2px 2px 0;
+      transform: rotate(45deg);
+    }
+
+    .tooltip-trigger { position: relative; cursor: help; }
+    .tooltip-content {
+      position: absolute;
+      bottom: 100%;
+      left: 50%;
+      transform: translateX(-50%) translateY(-8px);
+      background: rgb(var(--color-text-primary) / 1);
+      color: white;
+      padding: 8px 12px;
+      border-radius: 10px;
+      font-size: 0.75rem;
+      white-space: nowrap;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 160ms ease-out;
+      z-index: 100;
+    }
+    .tooltip-trigger:hover .tooltip-content { opacity: 1; }
+  </style>
+</head>
+<body class="bg-bg text-text-primary overflow-hidden">
+  <div class="modal-backdrop fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="modal-content bg-surface rounded-2xl border border-border w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col">
+      <div class="flex items-center justify-between px-6 py-5 border-b border-border">
+        <div>
+          <h2 class="text-xl font-heading font-semibold text-text-primary">Pendaftaran Eksperimen</h2>
+          <p class="text-sm text-text-secondary font-caption">Eksperimen Tetes Minyak Millikan (Pre-test)</p>
+        </div>
+        <button id="closeModal" class="btn btn-ghost px-3 py-2" aria-label="Tutup">Tutup</button>
+      </div>
+
+      <div class="px-6 py-4 bg-surface border-b border-border">
+        <div class="flex items-center justify-between mb-2">
+          <span class="text-sm font-medium text-text-primary font-caption">Progres Pengisian</span>
+          <span id="progressPercentage" class="text-sm font-semibold text-primary font-heading">0%</span>
+        </div>
+        <div class="w-full h-2 bg-border rounded-full overflow-hidden">
+          <div id="progressBar" class="progress-bar h-full bg-primary rounded-full" style="width: 0%"></div>
+        </div>
+        <div class="flex items-center justify-between mt-2 text-xs text-text-secondary font-caption">
+          <span id="progressStatus">Mulai mengisi formulir</span>
+          <span id="progressFields">0/7 field terisi</span>
+        </div>
+      </div>
+
+      <div class="flex-1 overflow-y-auto px-6 py-6">
+        <form id="preliminaryForm" class="space-y-8" novalidate>
+          <section class="space-y-4">
+            <div class="flex items-center gap-3 mb-2">
+              <div class="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center">
+                <span class="text-sm font-semibold text-primary font-heading">1</span>
+              </div>
+              <h3 class="text-lg font-heading font-semibold text-text-primary">Informasi Mahasiswa</h3>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label for="studentName" class="text-sm text-text-secondary flex items-center gap-2">
+                  <span>Nama Lengkap</span><span class="text-error">*</span>
+                    <span class="tooltip-trigger">
+                        <span class="text-text-tertiary">?</span>
+                        <span class="tooltip-content">Isi nama lengkap</span>
+                  </span>
+                </label>
+                <input id="studentName" name="studentName" type="text" class="input mt-1 w-full" placeholder="Contoh: Muhamad Farrel Dava Fauzan" required />
+                <p class="text-xs text-error mt-1 hidden" id="nameError">Nama lengkap wajib diisi</p>
+              </div>
+
+              <div>
+                <label for="studentNIM" class="text-sm text-text-secondary flex items-center gap-2">
+                  <span>NIM/NRM</span><span class="text-error">*</span>
+                  <span class="tooltip-trigger">
+                    <span class="text-text-tertiary">?</span>
+                    <span class="tooltip-content">Jika tidak punya, isi "-" (boleh angka dan tanda "-")</span>
+                  </span>
+                </label>
+                <input id="studentNIM" name="studentNIM" type="text" class="input mt-1 w-full" required />
+                <p class="text-xs text-error mt-1 hidden" id="nimError">NIM/NRM wajib diisi (jika tidak memiliki dapat isi "-")</p>
+              </div>
+
+              <div>
+                <label for="programStudy" class="text-sm text-text-secondary flex items-center gap-2">
+                  <span>Program Studi</span><span class="text-error">*</span>
+                  <span class="tooltip-trigger">
+                    <span class="text-text-tertiary">?</span>
+                    <span class="tooltip-content">Contoh: Pendidikan Fisika (jika tidak ada, isi "-")</span>
+                  </span>
+                </label>
+                <input id="programStudy" name="programStudy" type="text" class="input mt-1 w-full" required />
+                <p class="text-xs text-error mt-1 hidden" id="programStudyError">Program studi wajib diisi (jika tidak ada, isi "-")</p>
+              </div>
+
+              <div>
+                <label for="university" class="text-sm text-text-secondary flex items-center gap-2">
+                  <span>Universitas</span><span class="text-error">*</span>
+                  <span class="tooltip-trigger">
+                    <span class="text-text-tertiary">?</span>
+                    <span class="tooltip-content">Contoh: Universitas Negeri Jakarta (jika tidak ada, isi "-")</span>
+                  </span>
+                </label>
+                <input id="university" name="university" type="text" class="input mt-1 w-full" required />
+                <p class="text-xs text-error mt-1 hidden" id="universityError">Universitas wajib diisi (jika tidak ada, isi "-")</p>
+              </div>
+            </div>
+          </section>
+
+          <section class="space-y-4">
+            <div class="flex items-center gap-3 mb-2">
+              <div class="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center">
+                <span class="text-sm font-semibold text-primary font-heading">2</span>
+              </div>
+              <h3 class="text-lg font-heading font-semibold text-text-primary">Tujuan Eksperimen</h3>
+            </div>
+
+            <div class="bg-bg border border-border rounded-xl p-6">
+              <div class="flex items-start gap-3 mb-4">
+                <svg class="w-5 h-5 text-primary flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+                <div>
+                  <h4 class="font-medium text-text-primary mb-2 font-heading">Tujuan Pembelajaran</h4>
+                  <ul class="space-y-2 text-sm text-text-secondary">
+                    <li class="flex items-start gap-2"><span class="text-primary mt-1">•</span><span>Memahami prinsip dasar eksperimen Tetes Minyak Millikan untuk menentukan muatan elektron fundamental</span></li>
+                    <li class="flex items-start gap-2"><span class="text-primary mt-1">•</span><span>Menganalisis gaya-gaya yang bekerja pada tetesan minyak dalam medan listrik</span></li>
+                    <li class="flex items-start gap-2"><span class="text-primary mt-1">•</span><span>Melakukan pengukuran kecepatan terminal dan menghitung muatan elektron</span></li>
+                    <li class="flex items-start gap-2"><span class="text-primary mt-1">•</span><span>Menerapkan koreksi Cunningham untuk meningkatkan akurasi hasil pengukuran</span></li>
+                    <li class="flex items-start gap-2"><span class="text-primary mt-1">•</span><span>Menganalisis data eksperimen dan menyusun laporan ilmiah yang terstruktur</span></li>
+                  </ul>
+                </div>
+              </div>
+
+              <div class="flex items-start gap-3 pt-4 border-t border-border">
+                <svg class="w-5 h-5 text-text-secondary flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                </svg>
+                <div>
+                  <h4 class="font-medium text-text-primary mb-2 font-heading">Hasil yang Diharapkan</h4>
+                  <p class="text-sm text-text-secondary">
+                    Mahasiswa mampu menentukan nilai muatan elektron yang mendekati 1.602 × 10⁻¹⁹ C serta memahami signifikansi historis eksperimen ini dalam perkembangan fisika modern.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section class="space-y-4">
+            <div class="flex items-center gap-3 mb-2">
+              <div class="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center">
+                <span class="text-sm font-semibold text-primary font-heading">3</span>
+              </div>
+              <h3 class="text-lg font-heading font-semibold text-text-primary">Kuesioner Pra-Eksperimen</h3>
+            </div>
+
+            <div class="space-y-2">
+              <label for="variablesIdentification" class="text-sm text-text-secondary flex items-center gap-2">
+                <span>Identifikasi Variabel</span><span class="text-error">*</span>
+                <span class="tooltip-trigger inline-flex items-center">
+                  <svg class="w-4 h-4 text-text-tertiary" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                  </svg>
+                  <span class="tooltip-content">Sebutkan variabel bebas, terikat, dan kontrol</span>
+                </span>
+              </label>
+              <textarea id="variablesIdentification" name="variablesIdentification" class="input w-full min-h-[120px] resize-y" required></textarea>
+              <p class="text-xs text-text-tertiary">Minimal 50 karakter</p>
+              <p class="text-xs text-error hidden" id="variablesError">Identifikasi variabel wajib diisi (minimal 50 karakter)</p>
+            </div>
+
+            <div class="space-y-2">
+              <label for="hypothesis" class="text-sm text-text-secondary flex items-center gap-2">
+                <span>Hipotesis Eksperimen</span><span class="text-error">*</span>
+                <span class="tooltip-trigger inline-flex items-center">
+                  <svg class="w-4 h-4 text-text-tertiary" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                  </svg>
+                  <span class="tooltip-content">Prediksi hasil berdasarkan teori</span>
+                </span>
+              </label>
+              <textarea id="hypothesis" name="hypothesis" class="input w-full min-h-[120px] resize-y" required></textarea>
+              <p class="text-xs text-text-tertiary">Minimal 100 karakter</p>
+              <p class="text-xs text-error hidden" id="hypothesisError">Hipotesis wajib diisi (minimal 100 karakter)</p>
+            </div>
+
+            <div class="bg-bg rounded-xl p-4 border border-border">
+              <label class="flex items-start gap-3 cursor-pointer">
+                <input type="checkbox" id="understandingConfirm" name="understandingConfirm" class="custom-checkbox mt-0.5" required />
+                <div class="flex-1">
+                  <span class="text-sm font-medium text-text-primary block mb-1">Konfirmasi Pemahaman</span>
+                  <span class="text-xs text-text-secondary">
+                    Saya telah membaca dan memahami tujuan eksperimen serta siap melakukan praktikum Tetes Minyak Millikan dengan penuh tanggung jawab akademik.
+                  </span>
+                </div>
+              </label>
+              <p class="text-xs text-error mt-2 hidden" id="confirmError">Konfirmasi pemahaman wajib dicentang</p>
+            </div>
+          </section>
+
+          <div class="bg-warning/10 border border-warning/20 rounded-xl p-4">
+            <div class="flex items-start gap-3">
+              <svg class="w-5 h-5 text-warning flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+              </svg>
+              <div>
+                <h4 class="text-sm font-semibold text-text-primary mb-1 font-heading">Integritas Akademik</h4>
+                <p class="text-xs text-text-secondary">
+                  Data yang Anda masukkan disimpan secara lokal di perangkat ini untuk kebutuhan akademik. Pastikan informasi yang diberikan benar dan sesuai identitas.
+                </p>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+
+      <div class="px-6 py-4 border-t border-border bg-surface flex items-center justify-between">
+        <button type="button" id="cancelButton" class="btn btn-outline rounded-lg px-6 py-2.5">
+          <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+          Batal
+        </button>
+        <div class="flex items-center gap-3">
+          <div class="text-sm text-text-secondary font-caption hidden md:block">
+            <span id="validationMessage">Lengkapi semua field untuk melanjutkan</span>
+          </div>
+          <button type="submit" id="beginExperiment" class="btn btn-primary rounded-lg px-8 py-2.5 disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+            <span>Mulai Eksperimen</span>
+            <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function ensureSid() {
+      if (window.Auth && Auth.ensureSessionId) return Auth.ensureSessionId();
+      let sid = localStorage.getItem('fs_sid');
+      if (!sid) {
+        sid = (crypto && crypto.randomUUID) ? crypto.randomUUID() : String(Date.now()) + '-' + Math.random().toString(16).slice(2);
+        localStorage.setItem('fs_sid', sid);
+      }
+      return sid;
+    }
+
+    function getPrelimStorageKey() {
+      if (window.Auth && Auth.prelimKey) return Auth.prelimKey('millikan');
+      return `prelim:anon:${ensureSid()}:millikan`;
+    }
+
+    function parseExisting() {
+      const sid = localStorage.getItem('fs_sid');
+      const possibleKeys = [];
+      if (window.Auth && Auth.prelimKey) possibleKeys.push(Auth.prelimKey('millikan'));
+      if (sid) possibleKeys.push(`prelim:anon:${sid}:millikan`);
+      possibleKeys.push('prelim:anon:millikan');
+
+      for (const key of possibleKeys) {
+        const raw = localStorage.getItem(key);
+        if (!raw) continue;
+        try { return { key, obj: JSON.parse(raw) }; } catch {}
+      }
+      return null;
+    }
+
+    class PreliminaryFormManager {
+      constructor() {
+        this.form = document.getElementById('preliminaryForm');
+        this.fields = {
+          name: document.getElementById('studentName'),
+          nim: document.getElementById('studentNIM'),
+          programStudy: document.getElementById('programStudy'),
+          university: document.getElementById('university'),
+          variables: document.getElementById('variablesIdentification'),
+          hypothesis: document.getElementById('hypothesis'),
+          confirm: document.getElementById('understandingConfirm'),
+        };
+        this.totalFields = Object.keys(this.fields).length;
+        this.validFields = new Set();
+
+        this.progressBar = document.getElementById('progressBar');
+        this.progressPercentage = document.getElementById('progressPercentage');
+        this.progressStatus = document.getElementById('progressStatus');
+        this.progressFields = document.getElementById('progressFields');
+        this.validationMessage = document.getElementById('validationMessage');
+        this.beginButton = document.getElementById('beginExperiment');
+
+        this.init();
+      }
+
+      init() {
+        this.loadSavedData();
+
+        Object.entries(this.fields).forEach(([key, field]) => {
+          if (!field) return;
+          const onChange = () => this.validateField(key, field);
+          if (field.type === 'checkbox') {
+            field.addEventListener('change', onChange);
+          } else {
+            field.addEventListener('input', onChange);
+            field.addEventListener('blur', onChange);
+          }
+        });
+
+        document.getElementById('cancelButton').addEventListener('click', () => this.handleCancel());
+        document.getElementById('closeModal').addEventListener('click', () => this.handleCancel());
+
+        this.beginButton.addEventListener('click', (e) => this.handleSubmit(e));
+        this.form.addEventListener('submit', (e) => this.handleSubmit(e));
+
+        this.validateAllFields();
+      }
+
+      validateField(key, field) {
+        let isValid = false;
+        const errorElement = document.getElementById(`${key}Error`);
+        const value = field.type === 'checkbox' ? '' : String(field.value || '');
+        const trimmed = value.trim();
+
+        switch (key) {
+          case 'name':
+            isValid = trimmed.length >= 3 && !/^\d+$/.test(trimmed);
+            break;
+          case 'nim':
+            // Allow '-' when student doesn't have NIM/NRM.
+            isValid = trimmed.length > 0 && /^[0-9-]+$/.test(trimmed);
+            break;
+          case 'programStudy':
+          case 'university':
+            // Allow '-' when information is not available.
+            isValid = trimmed.length > 0;
+            break;
+          case 'variables':
+            isValid = trimmed.length >= 50;
+            break;
+          case 'hypothesis':
+            isValid = trimmed.length >= 100;
+            break;
+          case 'confirm':
+            isValid = !!field.checked;
+            break;
+        }
+
+        if (isValid) {
+          field.classList.remove('field-invalid');
+          field.classList.add('field-valid');
+          if (errorElement) errorElement.classList.add('hidden');
+          this.validFields.add(key);
+        } else {
+          field.classList.remove('field-valid');
+          const shouldShow = field.type === 'checkbox' ? true : trimmed.length > 0;
+          if (shouldShow) {
+            field.classList.add('field-invalid');
+            if (errorElement) errorElement.classList.remove('hidden');
+          } else {
+            field.classList.remove('field-invalid');
+            if (errorElement) errorElement.classList.add('hidden');
+          }
+          this.validFields.delete(key);
+        }
+
+        this.updateProgress();
+        this.saveToLocalStorage();
+      }
+
+      validateAllFields() {
+        Object.entries(this.fields).forEach(([key, field]) => {
+          if (!field) return;
+          this.validateField(key, field);
+        });
+      }
+
+      updateProgress() {
+        const validCount = this.validFields.size;
+        const percentage = Math.round((validCount / this.totalFields) * 100);
+
+        this.progressBar.style.width = `${percentage}%`;
+        this.progressPercentage.textContent = `${percentage}%`;
+        this.progressFields.textContent = `${validCount}/${this.totalFields} field terisi`;
+
+        if (percentage === 0) this.progressStatus.textContent = 'Mulai mengisi formulir';
+        else if (percentage < 50) this.progressStatus.textContent = 'Terus lanjutkan pengisian';
+        else if (percentage < 100) this.progressStatus.textContent = 'Hampir selesai!';
+        else this.progressStatus.textContent = 'Formulir lengkap — siap memulai';
+
+        const allValid = validCount === this.totalFields;
+        this.beginButton.disabled = !allValid;
+
+        if (this.validationMessage) {
+          if (allValid) {
+            this.validationMessage.textContent = 'Semua field valid ✓';
+            this.validationMessage.classList.remove('text-text-secondary');
+            this.validationMessage.classList.add('text-success');
+          } else {
+            this.validationMessage.textContent = `${this.totalFields - validCount} field belum lengkap`;
+            this.validationMessage.classList.remove('text-success');
+            this.validationMessage.classList.add('text-text-secondary');
+          }
+        }
+      }
+
+      buildPayload() {
+        return {
+          studentName: String(this.fields.name.value || '').trim(),
+          studentNIM: String(this.fields.nim.value || '').trim(),
+          programStudy: String(this.fields.programStudy.value || '').trim(),
+          university: String(this.fields.university.value || '').trim(),
+          variablesIdentification: String(this.fields.variables.value || '').trim(),
+          hypothesis: String(this.fields.hypothesis.value || '').trim(),
+          understandingConfirm: !!this.fields.confirm.checked,
+          createdAt: new Date().toISOString(),
+          version: 3,
+        };
+      }
+
+      saveToLocalStorage() {
+        const key = getPrelimStorageKey();
+        localStorage.setItem(key, JSON.stringify(this.buildPayload()));
+      }
+
+      loadSavedData() {
+        const found = parseExisting();
+        if (!found || !found.obj) return;
+        const data = found.obj;
+
+        this.fields.name.value = data.studentName || '';
+        this.fields.nim.value = data.studentNIM || '';
+        // Compatibility: older records might not have university.
+        this.fields.programStudy.value = data.programStudy || data.studentClass || '';
+        this.fields.university.value = data.university || '';
+        this.fields.variables.value = data.variablesIdentification || '';
+        this.fields.hypothesis.value = data.hypothesis || '';
+        this.fields.confirm.checked = !!data.understandingConfirm;
+      }
+
+      handleSubmit(e) {
+        e.preventDefault();
+        this.validateAllFields();
+        if (this.validFields.size !== this.totalFields) return;
+        this.saveToLocalStorage();
+        window.location.href = '/pages/simulations/milikan/index.html';
+      }
+
+      handleCancel() {
+        window.location.href = '/pages/simulations_hub.html';
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      new PreliminaryFormManager();
+    });
+  </script>
+<script id="dhws-dataInjector" src="../../../public/dhws-data-injector.js"></script>
+</body>
+</html>

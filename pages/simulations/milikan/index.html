@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Eksperimen Tetes Minyak Millikan - Mode SPA (Single Page Application) berbasis state">
+  <title>Eksperimen Millikan (SPA) | FisikaSeru</title>
+  <link rel="stylesheet" href="../../../css/main.css">
+  <script defer src="../../../public/js/auth.js"></script>
+  <style>
+    .iframe-container { position: relative; width: 100%; }
+    .lab-frame { position: relative; width: 100%; height: 80vh; min-height: 80vh; border: 0; border-radius: 12px; box-shadow: 0 10px 20px rgba(0,0,0,.08); display: block; }
+    .hidden { display: none; }
+    .progress-grid { display: grid; grid-template-columns: auto 1fr auto 1fr auto 1fr auto; grid-template-rows: 40px auto; align-items: center; }
+    .progress-step { position: relative; background: transparent; border: 0; padding: 0; cursor: pointer; justify-self: center; }
+    .progress-step .step-circle { width: 40px; height: 40px; border-radius: 9999px; border-width: 2px; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: .875rem; margin-bottom: 0; }
+    .progress-step.active .step-circle { background: #3B82F6; color: white; border-color: #3B82F6; }
+    .progress-step.completed .step-circle { background: #10B981; color: white; border-color: #10B981; }
+
+    .progress-step[aria-disabled="true"] { cursor: not-allowed; opacity: .5; }
+    .progress-step[aria-disabled="true"]:focus { outline: none; }
+
+    .progress-label { justify-self: center; margin-top: .5rem; font-size: .875rem; color: #64748B; }
+    .progress-step.active ~ .progress-label { color: inherit; }
+
+    /* Connector lines between steps (make sure they are always visible) */
+    .progress-line { height: 2px; background: #E2E8F0; align-self: center; }
+    .progress-line.completed { background: #10B981; }
+  </style>
+</head>
+<body class="bg-background">
+  <!-- Navigation Header -->
+  <nav class="bg-white border-b border-border sticky top-0 z-50 shadow-sm">
+    <div class="container-custom">
+      <div class="flex items-center justify-between h-16">
+        <!-- Logo (match landing page) -->
+        <a href="../../landing_page.html" class="flex items-center space-x-3">
+          <svg class="w-10 h-10" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="20" cy="20" r="18" fill="#3B82F6" opacity="0.1"/>
+            <path d="M20 8C13.373 8 8 13.373 8 20C8 26.627 13.373 32 20 32C26.627 32 32 26.627 32 20C32 13.373 26.627 8 20 8ZM20 10C25.514 10 30 14.486 30 20C30 25.514 25.514 30 20 30C14.486 30 10 25.514 10 20C10 14.486 14.486 10 20 10Z" fill="#3B82F6"/>
+            <circle cx="20" cy="20" r="4" fill="#06B6D4"/>
+            <path d="M20 12V16M20 24V28M12 20H16M24 20H28" stroke="#3B82F6" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+          <div>
+            <h1 class="text-xl font-heading font-semibold text-primary">FisikaSeru</h1>
+            <p class="text-xs text-text-secondary font-caption">Laboratorium Virtual</p>
+          </div>
+        </a>
+
+        <!-- Desktop Navigation (match landing page) -->
+        <div class="hidden md:flex items-center space-x-8">
+          <a href="../../landing_page.html" class="text-sm font-medium text-primary hover:text-primary-dark transition-colors">Beranda</a>
+          <a href="../../simulations_hub.html" class="text-sm font-medium text-text-secondary hover:text-primary transition-colors">Laboratorium</a>
+          <a href="../../tentang.html" class="text-sm font-medium text-text-secondary hover:text-primary transition-colors">Tentang</a>
+          <a href="../../kontak.html" class="text-sm font-medium text-text-secondary hover:text-primary transition-colors">Kontak</a>
+        </div>
+
+        <!-- User Controls -->
+        <div class="flex items-center space-x-3">
+          <span id="spaUserName" class="text-sm font-medium text-text-primary"></span>
+          <button id="spaLogout" class="btn btn-outline rounded-lg px-4 py-2.5">Logout</button>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Progress Indicator -->
+  <section class="bg-surface border-b border-border py-6">
+    <div class="container-custom">
+      <div class="max-w-4xl mx-auto">
+        <div id="progressBar" class="progress-grid">
+          <button type="button" class="progress-step" data-step="0" aria-label="Pre-test" style="grid-column:1; grid-row:1;">
+            <div class="step-circle border-2 border-border text-text-tertiary">
+              <span class="step-num">0</span>
+              <svg class="step-check hidden" width="20" height="20" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+              </svg>
+            </div>
+          </button>
+
+          <div class="progress-line" data-progress-line="0-1" style="grid-column:2; grid-row:1;"></div>
+
+          <button type="button" class="progress-step" data-step="1" aria-label="Tahap 1: Teori" style="grid-column:3; grid-row:1;">
+            <div class="step-circle border-2 border-border text-text-tertiary">1</div>
+          </button>
+
+          <div class="progress-line" data-progress-line="1-2" style="grid-column:4; grid-row:1;"></div>
+
+          <button type="button" class="progress-step" data-step="2" aria-label="Tahap 2: Simulasi" style="grid-column:5; grid-row:1;">
+            <div class="step-circle border-2 border-border text-text-tertiary">2</div>
+          </button>
+
+          <div class="progress-line" data-progress-line="2-3" style="grid-column:6; grid-row:1;"></div>
+
+          <button type="button" class="progress-step" data-step="3" aria-label="Tahap 3: Analisis" style="grid-column:7; grid-row:1;">
+            <div class="step-circle border-2 border-border text-text-tertiary">3</div>
+          </button>
+
+          <div class="progress-label" style="grid-column:1; grid-row:2;">Pre-test</div>
+          <div class="progress-label" style="grid-column:3; grid-row:2;">Teori</div>
+          <div class="progress-label" style="grid-column:5; grid-row:2;">Simulasi</div>
+          <div class="progress-label" style="grid-column:7; grid-row:2;">Analisis</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SPA Container -->
+  <main class="container-custom py-6">
+    <div class="iframe-container" id="spaContainer">
+      <iframe id="frame1" class="lab-frame" src="stage-1.html" title="Tahap 1"></iframe>
+      <iframe id="frame2" class="lab-frame hidden" src="stage-2.html" title="Tahap 2"></iframe>
+      <iframe id="frame3" class="lab-frame hidden" src="stage-3.html" title="Tahap 3"></iframe>
+    </div>
+    <div id="emptyState" class="hidden bg-surface border border-border rounded-xl p-6">
+      <h3 class="text-lg font-heading font-semibold text-text-primary mb-2">Data Awal Diperlukan</h3>
+      <p class="text-sm text-text-secondary">Lengkapi pendaftaran eksperimen terlebih dahulu sebelum memasuki laboratorium.</p>
+      <a href="preliminary.html" class="btn btn-primary mt-4">Buka Pendaftaran</a>
+    </div>
+  </main>
+
+  <script>
+    // Guest-first gating:
+    // - Do NOT redirect anonymous users
+    // - Preliminary required, stored per identity (anon sessionId or user uid)
+    async function initGating() {
+      const nameEl = document.getElementById('spaUserName');
+      const logoutBtn = document.getElementById('spaLogout');
+
+      let isAuthenticated = false;
+      let user = null;
+      try {
+        const res = await fetch('/api/me', { credentials: 'include' });
+        if (res.ok) {
+          const data = await res.json();
+          isAuthenticated = !!(data && data.authenticated);
+          user = data && data.user ? data.user : null;
+        }
+      } catch {}
+
+      if (isAuthenticated && user) {
+        if (nameEl) nameEl.textContent = user.name || user.uid;
+        if (logoutBtn) {
+          logoutBtn.classList.remove('hidden');
+          logoutBtn.onclick = async () => {
+            await fetch('/logout', { method: 'POST', credentials: 'include' });
+            window.location.reload();
+          };
+        }
+      } else {
+        if (nameEl) nameEl.textContent = 'Tamu';
+        if (logoutBtn) logoutBtn.classList.add('hidden');
+      }
+
+      function ensureSid() {
+        if (window.Auth && Auth.ensureSessionId) return Auth.ensureSessionId();
+        let sid = localStorage.getItem('fs_sid');
+        if (!sid) {
+          sid = (crypto && crypto.randomUUID) ? crypto.randomUUID() : String(Date.now()) + '-' + Math.random().toString(16).slice(2);
+          localStorage.setItem('fs_sid', sid);
+        }
+        return sid;
+      }
+
+      function isValidPrelim(raw) {
+        if (!raw) return false;
+        try {
+          const obj = JSON.parse(raw);
+          const version = Number(obj.version || 0);
+          if (version !== 3) return false;
+
+          const name = String(obj.studentName || '').trim();
+          const nim = String(obj.studentNIM || '').trim();
+          const programStudy = String(obj.programStudy || '').trim();
+          const university = String(obj.university || '').trim();
+          const variables = String(obj.variablesIdentification || '').trim();
+          const hypothesis = String(obj.hypothesis || '').trim();
+          const confirm = !!obj.understandingConfirm;
+
+          if (!name || /^\d+$/.test(name) || name.length < 3) return false;
+          if (!nim) return false;
+          if (!programStudy) return false;
+          if (!university) return false;
+          if (variables.length < 50) return false;
+          if (hypothesis.length < 100) return false;
+          if (!confirm) return false;
+          return true;
+        } catch {
+          return false;
+        }
+      }
+
+      const identityKey = (isAuthenticated && user)
+        ? user.uid
+        : `anon:${ensureSid()}`;
+      const prelimRaw = localStorage.getItem(`prelim:${identityKey}:millikan`);
+      const hasPrelim = isValidPrelim(prelimRaw);
+
+      state.prelimComplete = hasPrelim;
+      updateProgressUI();
+
+      if (!hasPrelim) {
+        document.getElementById('spaContainer').classList.add('hidden');
+        document.getElementById('emptyState').classList.remove('hidden');
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', initGating);
+
+    function getMeasurementCount() {
+      try {
+        const raw = localStorage.getItem('millikanMeasurements');
+        if (!raw) return 0;
+        const parsed = JSON.parse(raw);
+        return Array.isArray(parsed) ? parsed.length : 0;
+      } catch {
+        return 0;
+      }
+    }
+
+    // Simple SPA state
+    const state = { stage: 1, prelimComplete: false, stage3Unlocked: false };
+    const frames = {
+      1: document.getElementById('frame1'),
+      2: document.getElementById('frame2'),
+      3: document.getElementById('frame3'),
+    };
+
+    function updateProgressUI() {
+      const steps = Array.from(document.querySelectorAll('#progressBar .progress-step'));
+      steps.forEach(step => {
+        const n = Number(step.dataset.step);
+        step.classList.remove('active', 'completed');
+
+        // Lock stages until pre-test is completed
+        if (n > 0 && !state.prelimComplete) {
+          step.setAttribute('aria-disabled', 'true');
+        } else {
+          step.setAttribute('aria-disabled', 'false');
+        }
+
+        // Lock Stage 3 until enough measurements are captured
+        if (n === 3 && state.prelimComplete && !state.stage3Unlocked) {
+          step.setAttribute('aria-disabled', 'true');
+        }
+
+        if (n === 0) {
+          if (state.prelimComplete) step.classList.add('completed');
+          const num = step.querySelector('.step-num');
+          const check = step.querySelector('.step-check');
+          if (num && check) {
+            if (state.prelimComplete) {
+              num.classList.add('hidden');
+              check.classList.remove('hidden');
+            } else {
+              num.classList.remove('hidden');
+              check.classList.add('hidden');
+            }
+          }
+          return;
+        }
+
+        // When locked, keep the future steps visually neutral.
+        if (step.getAttribute('aria-disabled') === 'true') return;
+
+        if (n === state.stage) step.classList.add('active');
+        if (n < state.stage) step.classList.add('completed');
+      });
+
+      const line01 = document.querySelector('[data-progress-line="0-1"]');
+      const line12 = document.querySelector('[data-progress-line="1-2"]');
+      const line23 = document.querySelector('[data-progress-line="2-3"]');
+
+      function setLine(lineEl, completed) {
+        if (!lineEl) return;
+        lineEl.classList.toggle('completed', !!completed);
+      }
+
+      setLine(line01, state.prelimComplete);
+      setLine(line12, state.stage >= 2);
+      setLine(line23, state.stage >= 3);
+    }
+
+    function showStage(n) {
+      if (n === 3 && state.prelimComplete && !state.stage3Unlocked) {
+        n = 2;
+      }
+
+      state.stage = n;
+      Object.values(frames).forEach(f => f.classList.add('hidden'));
+      frames[n].classList.remove('hidden');
+      updateProgressUI();
+      history.replaceState({ stage: n }, '', `#stage-${n}`);
+    }
+
+    // Progress circles navigation
+    document.querySelectorAll('#progressBar .progress-step').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        if (btn.getAttribute('aria-disabled') === 'true') return;
+        const n = Number(btn.dataset.step);
+        if (n === 0) {
+          window.location.href = 'preliminary.html';
+          return;
+        }
+        showStage(n);
+      });
+    });
+
+    // Intercept in-iframe navigation between stages to keep SPA routing
+    function interceptLinks(frame, mappings) {
+      try {
+        const doc = frame.contentDocument || frame.contentWindow.document;
+        const anchors = Array.from(doc.querySelectorAll('a[href]'));
+        anchors.forEach(a => {
+          const href = a.getAttribute('href');
+          const targetStage = mappings[href];
+          if (targetStage) {
+            a.addEventListener('click', (e) => {
+              e.preventDefault();
+              showStage(targetStage);
+            });
+          }
+        });
+      } catch (err) {
+        // Ignore cross-origin or timing issues silently
+      }
+    }
+
+    function setupFrameInterceptors() {
+      interceptLinks(frames[1], {
+        'index.html#stage-2': 2,
+      });
+      interceptLinks(frames[2], {
+        'index.html#stage-1': 1,
+        'index.html#stage-3': 3,
+      });
+      interceptLinks(frames[3], {
+        'index.html#stage-2': 2,
+      });
+    }
+
+    // Attach interceptors on load and when content changes inside frames
+    Object.values(frames).forEach(frame => {
+      frame.addEventListener('load', setupFrameInterceptors);
+    });
+
+    // Auto-resize iframes to their content height so scrolling happens on the parent page.
+    // Stages report their height via postMessage (see stage-*.html).
+    function findFrameByWindow(win) {
+      return Object.values(frames).find(f => f && f.contentWindow === win) || null;
+    }
+
+    function setFrameHeight(frame, height) {
+      if (!frame) return;
+      const h = Number(height);
+      if (!Number.isFinite(h) || h <= 0) return;
+      const minH = Math.round(window.innerHeight * 0.8);
+      frame.style.height = `${Math.max(h, minH)}px`;
+    }
+
+    window.addEventListener('message', (event) => {
+      const data = event && event.data;
+      if (!data || !data.type) return;
+
+      if (data.type === 'milikan:iframeHeight') {
+        const frame = findFrameByWindow(event.source);
+        setFrameHeight(frame, data.height);
+        return;
+      }
+
+      if (data.type === 'millikan:measurementsUpdated') {
+        const count = Number(data.count);
+        state.stage3Unlocked = Number.isFinite(count)
+          ? count >= 3
+          : getMeasurementCount() >= 3;
+        updateProgressUI();
+      }
+    });
+
+    // Fallback: attempt to measure height on iframe load (same-origin only).
+    Object.values(frames).forEach(frame => {
+      frame.addEventListener('load', () => {
+        try {
+          const doc = frame.contentDocument || frame.contentWindow.document;
+          setFrameHeight(frame, doc.documentElement.scrollHeight);
+        } catch {}
+      });
+    });
+
+    // Init based on hash
+    const initial = (location.hash.match(/stage-(\d)/) || [])[1];
+    state.stage3Unlocked = getMeasurementCount() >= 3;
+    showStage(initial ? Number(initial) : 1);
+  </script>
+  <script id="dhws-dataInjector" src="../../../public/dhws-data-injector.js"></script>
+</body>
+</html>
