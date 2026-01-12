@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Stage 4 | Milikan</title>
+  <link rel="stylesheet" href="css/simulation.css" />
+</head>
+<body data-stage="stage-4">
+  <header class="header">
+    <div><strong>Stage 4 — Report Mapping</strong></div>
+    <a href="index.html">Kembali</a>
+  </header>
+  <main class="container">
+    <div class="stepper" id="stepper"></div>
+    <div class="card">
+      <h3>Template Laporan (Terkunci)</h3>
+      <div id="report-template"></div>
+    </div>
+    <div class="card">
+      <h3>Interpretasi & Diskusi</h3>
+      <label>Interpretasi hasil</label>
+      <textarea id="report-interpretation"></textarea>
+      <label>Diskusi & keterbatasan</label>
+      <textarea id="report-discussion"></textarea>
+      <label>Kesimpulan</label>
+      <textarea id="report-conclusion"></textarea>
+      <button class="button secondary" id="save-history">Simpan ke Dashboard</button>
+      <button class="button" id="export-pdf">Export PDF (Login Diperlukan)</button>
+      <p id="export-status"></p>
+    </div>
+  </main>
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>
