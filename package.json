@@ -15,7 +15,10 @@
     "dev": "npm run watch:css",
     "dev:all": "concurrently \"npm run watch:css\" \"npm run serve\"",
     "dev:all:clean": "concurrently \"npm run watch:css:clean\" \"npm run serve\"",
-    "dev:full": "start cmd /c \"npm run serve\" & npm run watch:css"
+    "dev:full": "start cmd /c \"npm run serve\" & npm run watch:css",
+    "dev:labs": "npx http-server . -p 5174 -c-1",
+    "dev:platform:server": "node ./platform/server/index.js",
+    "dev:platform:client": "npm --prefix ./platform/client run dev"
   },
   "dependencies": {
     "@dhiwise/component-tagger": "^1.0.14",
@@ -40,6 +43,7 @@
     "concurrently": "^9.2.1",
     "dotenv": "^16.6.1",
     "postcss": "^8.4.38",
-    "tailwindcss": "^3.4.17"
+    "tailwindcss": "^3.4.17",
+    "http-server": "^14.1.1"
   }
 }

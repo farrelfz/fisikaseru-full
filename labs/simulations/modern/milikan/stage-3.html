@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Stage 3 | Milikan</title>
+  <link rel="stylesheet" href="css/simulation.css" />
+</head>
+<body data-stage="stage-3">
+  <header class="header">
+    <div><strong>Stage 3 — Data Analysis & Interpretation</strong></div>
+    <a href="index.html">Kembali</a>
+  </header>
+  <main class="container">
+    <div class="stepper" id="stepper"></div>
+    <div class="grid two">
+      <div class="card">
+        <h3>Statistik Deskriptif</h3>
+        <ul id="stats-list"></ul>
+        <div class="notice">Interpretasikan deviasi: apakah ada drift, quantization, atau error sistematik?</div>
+      </div>
+      <div class="card">
+        <h3>Clustering Muatan</h3>
+        <p>Model kuantisasi mengharapkan q = n·e. Lihat estimasi e berikut:</p>
+        <p><strong id="e-estimate">-</strong></p>
+        <p id="multiples-list"></p>
+      </div>
+    </div>
+    <div class="grid two">
+      <div class="card">
+        <h3>Plot Utama: q vs Run</h3>
+        <canvas id="plot-main" width="420" height="260"></canvas>
+      </div>
+      <div class="card">
+        <h3>Plot Linearization</h3>
+        <canvas id="plot-linear" width="420" height="260"></canvas>
+      </div>
+    </div>
+    <div class="card">
+      <h3>Residual</h3>
+      <canvas id="plot-residual" width="820" height="200"></canvas>
+    </div>
+    <div class="card">
+      <h3>Tabel Analisis (Interaktif)</h3>
+      <table class="table" id="analysis-table">
+        <thead>
+          <tr>
+            <th>Run</th>
+            <th>t↓ (s)</th>
+            <th>t↑ (s)</th>
+            <th>v↓ (m/s)</th>
+            <th>v↑ (m/s)</th>
+            <th>q (C)</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+    <div class="card">
+      <h3>Prompt Refleksi</h3>
+      <ul>
+        <li>Variabel mana yang paling sensitif terhadap error waktu?</li>
+        <li>Apa alasan data Anda tidak persis kelipatan e?</li>
+        <li>Bagaimana Anda akan memperbaiki desain eksperimen?</li>
+      </ul>
+    </div>
+  </main>
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Stage 2 | Milikan</title>
+  <link rel="stylesheet" href="css/simulation.css" />
+</head>
+<body data-stage="stage-2">
+  <header class="header">
+    <div><strong>Stage 2 — Experiment & Data Acquisition</strong></div>
+    <a href="index.html">Kembali</a>
+  </header>
+  <main class="container">
+    <div class="stepper" id="stepper"></div>
+    <div class="grid two">
+      <div class="card">
+        <h3>Kontrol Instrumen</h3>
+        <label>Tegangan (V)</label>
+        <input id="input-voltage" value="500" />
+        <label>Jarak pelat (m)</label>
+        <input id="input-distance" value="0.005" />
+        <label>Jarak jatuh (m)</label>
+        <input id="input-fall" value="0.0005" />
+        <label>Jarak naik (m)</label>
+        <input id="input-rise" value="0.0005" />
+        <label>Kepadatan minyak (kg/m³)</label>
+        <input id="input-density" value="860" />
+        <button class="button" id="run-sim">Jalankan 1 Run</button>
+        <button class="button secondary" id="clear-runs">Hapus Data</button>
+      </div>
+      <div class="card">
+        <h3>Visualisasi</h3>
+        <div class="canvas-box">
+          <canvas id="sim-canvas" width="320" height="200"></canvas>
+        </div>
+        <p class="notice">Catat minimal 8 run agar analisis kuantitatif stabil.</p>
+      </div>
+    </div>
+    <div class="card">
+      <h3>Log Data Run</h3>
+      <table class="table" id="run-table">
+        <thead>
+          <tr>
+            <th>Run</th>
+            <th>t↓ (s)</th>
+            <th>t↑ (s)</th>
+            <th>v↓ (m/s)</th>
+            <th>v↑ (m/s)</th>
+            <th>E (V/m)</th>
+            <th>r (m)</th>
+            <th>q (C)</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </main>
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>

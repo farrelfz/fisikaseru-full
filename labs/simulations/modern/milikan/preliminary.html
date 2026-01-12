@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Stage 0 | Milikan</title>
+  <link rel="stylesheet" href="css/simulation.css" />
+</head>
+<body data-stage="preliminary">
+  <header class="header">
+    <div><strong>Stage 0 — Preliminary</strong></div>
+    <a href="index.html">Kembali</a>
+  </header>
+  <main class="container">
+    <div class="stepper" id="stepper"></div>
+    <div class="card">
+      <h2>Orientasi Ilmiah</h2>
+      <p>Anda akan menguji model gaya-gaya pada tetes minyak bermuatan dan menentukan muatan elementer.</p>
+      <div class="grid two">
+        <div class="card">
+          <h3>Asumsi & Batasan</h3>
+          <ul>
+            <li>Gerak terminal tercapai (percepatan diabaikan).</li>
+            <li>Partikel berbentuk bola dan homogen.</li>
+            <li>Model fluida menggunakan drag Stokes + koreksi Cunningham.</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>Yang Tidak Dimodelkan</h3>
+          <ul>
+            <li>Interaksi antar tetes.</li>
+            <li>Fluktuasi suhu ekstrem.</li>
+            <li>Distorsi medan listrik di tepi pelat.</li>
+          </ul>
+        </div>
+      </div>
+      <div class="card">
+        <h3>Prasyarat</h3>
+        <label><input type="checkbox" class="prelim-check" /> Memahami gaya berat, apung, dan drag.</label><br />
+        <label><input type="checkbox" class="prelim-check" /> Mengerti konsep kecepatan terminal.</label><br />
+        <label><input type="checkbox" class="prelim-check" /> Siap mencatat data minimal 8 run.</label>
+      </div>
+      <div class="card">
+        <h3>Identitas</h3>
+        <label>Nama</label>
+        <input id="student-name" placeholder="Nama lengkap" />
+        <label>ID / Kelas</label>
+        <input id="student-id" placeholder="Contoh: XI-2" />
+      </div>
+      <button class="button" id="prelim-submit">Saya Siap, Mulai Eksperimen</button>
+    </div>
+  </main>
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>

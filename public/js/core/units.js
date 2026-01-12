@@ -1,6 +1,6 @@
-// Global unit helpers (SI-first)
-window.FSUnits = {
-  mmToM(mm) { return mm / 1000; },
-  umToM(um) { return um * 1e-6; },
-  mmpsToMps(mmps) { return mmps * 1e-3; },
+export const units = {
+  mmToM: (mm) => mm / 1000,
+  umToM: (um) => um * 1e-6,
+  mToUm: (m) => m * 1e6,
+  msToS: (ms) => ms / 1000,
 };

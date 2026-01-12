@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Stage 1 | Milikan</title>
+  <link rel="stylesheet" href="css/simulation.css" />
+</head>
+<body data-stage="stage-1">
+  <header class="header">
+    <div><strong>Stage 1 — Conceptual Recall</strong></div>
+    <a href="index.html">Kembali</a>
+  </header>
+  <main class="container">
+    <div class="stepper" id="stepper"></div>
+    <div class="card">
+      <h2>Kalibrasi Mental Model</h2>
+      <div class="grid two">
+        <div class="card">
+          <h3>Checklist Konsep</h3>
+          <ul>
+            <li>Apa yang dimaksud kecepatan terminal?</li>
+            <li>Mengapa gaya apung mengurangi berat efektif?</li>
+            <li>Mengapa data perlu dilinierkan untuk mencari parameter?</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>Pra-Perkiraan</h3>
+          <label>Perkiraan muatan elementer (C)</label>
+          <input id="guess-e" placeholder="Contoh: 1.6e-19" />
+          <label>Prediksi sumber error terbesar</label>
+          <textarea id="guess-error" placeholder="Tuliskan prediksi Anda"></textarea>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <h3>GO Gate</h3>
+      <p>Pastikan Stage 0 sudah diselesaikan. Stage 2 akan terkunci jika gate belum terpenuhi.</p>
+      <a class="button" href="stage-2.html">Lanjut ke Stage 2</a>
+    </div>
+  </main>
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>
