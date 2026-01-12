@@ -14,9 +14,20 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PLATFORM_PORT || 4000;
 const CLIENT_URL = process.env.CLIENT_URL || 'http://localhost:5173';
+const LABS_URL = process.env.LABS_URL || 'http://localhost:5174';
 const JWT_SECRET = process.env.JWT_SECRET || 'dev_secret';
 
-app.use(cors({ origin: CLIENT_URL, credentials: true }));
+const allowedOrigins = [CLIENT_URL, LABS_URL];
+app.use(cors({
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+      return;
+    }
+    callback(new Error('Not allowed by CORS'));
+  },
+  credentials: true,
+}));
 app.use(express.json({ limit: '2mb' }));
 app.use(cookieParser());
 app.use(passport.initialize());

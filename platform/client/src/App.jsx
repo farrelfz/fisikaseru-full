@@ -19,6 +19,7 @@ export default function App() {
   const [page, setPage] = useState('home');
   const [user, setUser] = useState(null);
   const [history, setHistory] = useState([]);
+  const labsUrl = import.meta.env.VITE_LABS_URL || 'http://localhost:5174';
 
   const refreshUser = async () => {
     const response = await fetch('/api/me', { credentials: 'include' });
@@ -98,7 +99,7 @@ export default function App() {
           <section className="card">
             <h2>Milikan Oil Drop</h2>
             <p>Jalankan simulasi melalui iframe mandiri.</p>
-            <iframe title="milikan" src="http://localhost:5174/labs/simulations/modern/milikan/index.html" className="lab-frame" />
+            <iframe title="milikan" src={`${labsUrl}/labs/simulations/modern/milikan/index.html`} className="lab-frame" />
           </section>
         )}
         {page === 'dashboard' && (

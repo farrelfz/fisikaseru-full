@@ -184,7 +184,7 @@ const handleStage4 = async () => {
   const status = document.getElementById('export-status');
   if (saveButton) {
     saveButton.addEventListener('click', async () => {
-      const response = await fetch('/api/history', {
+      const response = await fetch(`${state.apiBase}/api/history`, {
         method: 'POST',
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
@@ -206,7 +206,7 @@ const handleStage4 = async () => {
       discussion: document.getElementById('report-discussion').value,
       conclusion: document.getElementById('report-conclusion').value,
     };
-    const response = await fetch('/api/pdf', {
+    const response = await fetch(`${state.apiBase}/api/pdf`, {
       method: 'POST',
       credentials: 'include',
       headers: { 'Content-Type': 'application/json' },

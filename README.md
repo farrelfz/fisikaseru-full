@@ -57,6 +57,7 @@ npm run dev:platform:client
 ```
 PLATFORM_PORT=4000
 CLIENT_URL=http://localhost:5173
+LABS_URL=http://localhost:5174
 JWT_SECRET=CHANGE_ME
 MONGO_URL=mongodb://localhost:27017/fisikaseru
 
